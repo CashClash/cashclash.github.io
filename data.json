@@ -1,0 +1,25 @@
+{
+  "last_updated": "2026-02-23",
+  "entities": [
+    {
+      "id": "nasa",
+      "name": "NASA",
+      "category": "government",
+      "color": "#ff4d4d",
+      "data": {
+        "2025": { "income": 23000000000, "spending": 25400000000 },
+        "2024": { "income": 22000000000, "spending": 24800000000 }
+      }
+    },
+    {
+      "id": "elon-musk",
+      "name": "ELON MUSK",
+      "category": "person",
+      "color": "#00ff88",
+      "data": {
+        "2025": { "income": 150000000000, "spending": 5000000000 },
+        "2024": { "income": 95000000000, "spending": 3000000000 }
+      }
+    }
+  ]
+}
