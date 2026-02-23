@@ -1,8 +1,20 @@
 let financialData = null;
 let currentYear = "2026";
 let currentTimeUnit = "sec";
-// Налаштування режимів для кожної картки
 let cardModes = { left: "spending", right: "income" };
+
+// Стан для натурального дрейфу чисел (Random Walk)
+let drift = { left: 1, right: 1 };
+
+const multipliers = {
+    sec: 1,
+    min: 60,
+    hour: 3600,
+    day: 86400,
+    week: 604800,
+    month: 2592000,
+    year: 31536000
+};
 
 async function init() {
     try {
@@ -10,7 +22,9 @@ async function init() {
         financialData = await response.json();
         setupEventListeners();
         startTickers();
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error("Помилка завантаження даних:", e); 
+    }
 }
 
 function setupEventListeners() {
@@ -32,7 +46,7 @@ function setupEventListeners() {
         }
     });
 
-    // Перемикачі режимів Income/Spending всередині карток
+    // Перемикачі режимів Income/Spending
     document.querySelectorAll('.mode-switch').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const card = e.target.closest('.card');
@@ -40,11 +54,9 @@ function setupEventListeners() {
             const mode = e.target.dataset.mode;
             
             cardModes[side] = mode;
+            card.className = `card ${mode}`;
             card.querySelectorAll('.mode-switch').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
-            
-            // Змінюємо колір картки візуально
-            card.className = `card ${mode}`;
         });
     });
 }
@@ -55,49 +67,76 @@ function startTickers() {
         const now = new Date();
         const isCurrentYear = now.getFullYear().toString() === currentYear;
         
-        let secondsPassed = isCurrentYear ? 
-            (now - new Date(now.getFullYear(), 0, 1)) / 1000 : 
-            365 * 24 * 60 * 60;
+        // Розрахунок часу
+        let secondsPassed;
+        if (isCurrentYear) {
+            secondsPassed = (now - new Date(now.getFullYear(), 0, 1)) / 1000;
+        } else if (currentYear === "Total") {
+            secondsPassed = 31536000 * 5; // Умовно 5 років для Total
+        } else {
+            secondsPassed = 31536000; // Повний минулий рік
+        }
 
         financialData.entities.forEach((entity, index) => {
             const side = index === 0 ? "left" : "right";
             const mode = cardModes[side];
+            
+            // Отримуємо дані для року або fallback на 2025
             const yearData = entity.data[currentYear] || entity.data["2025"] || { income: 0, spending: 0 };
-            
-            let baseValuePerYear = yearData[mode];
-            
-            // 4. Логіка коливань для поточного року (+-15%)
-            let volatility = 1;
+            const baseValuePerYear = yearData[mode] || 0;
+            const basePerSec = baseValuePerYear / 31536000;
+
+            // --- НАТУРАЛЬНА ВОЛАТИЛЬНІСТЬ (Random Walk) ---
             if (isCurrentYear && currentTimeUnit !== "year") {
-                // Плавне коливання на основі синусоїди від часу
-                volatility = 1 + (Math.sin(now.getTime() / 2000) * 0.15);
+                // Мікро-зміна кожного кадру
+                const change = (Math.random() - 0.5) * 0.002; 
+                drift[side] += change;
+
+                // М'яко повертаємо до центру, якщо занесло далі ніж на 15%
+                if (drift[side] > 1.15) drift[side] -= 0.002;
+                if (drift[side] < 0.85) drift[side] += 0.002;
+            } else {
+                drift[side] = 1; // Без коливань для минулих років
             }
 
-            const perSec = (baseValuePerYear / (365 * 24 * 60 * 60)) * volatility;
-            const cumulative = secondsPassed * (baseValuePerYear / (365 * 24 * 60 * 60)); // Кумулятив без коливань для точності
+            const currentRatePerSec = basePerSec * drift[side];
+            const cumulative = secondsPassed * basePerSec;
 
-            // 2. Перерахунок одиниць часу
-            let displayRate = perSec;
-            const multipliers = { min: 60, hour: 3600, day: 86400, week: 604800, month: 2592000, year: baseValuePerYear };
-            if (multipliers[currentTimeUnit]) displayRate = currentTimeUnit === "year" ? baseValuePerYear : perSec * multipliers[currentTimeUnit];
+            // --- РОЗРАХУНОК ВІДОБРАЖЕННЯ ---
+            let displayRate = (currentTimeUnit === 'year') ? baseValuePerYear : currentRatePerSec * multipliers[currentTimeUnit];
 
-            // 3. Оновлення підпису одиниці виміру та знаку "≈"
+            // --- ОНОВЛЕННЯ DOM ---
+            const nameEl = document.getElementById(`${side}Name`);
+            nameEl.innerText = entity.name;
+            
+            // Динамічний шрифт для довгих назв
+            if (entity.name.length > 12) {
+                nameEl.style.fontSize = '14px';
+            } else {
+                nameEl.style.fontSize = '';
+            }
+
+            document.getElementById(`${side}Type`).innerText = entity.category;
             document.getElementById(`${side}Unit`).innerText = `/ ${currentTimeUnit}`;
-            document.getElementById(`${side}Approx`).style.display = (isCurrentYear && currentTimeUnit === "year") ? "inline" : "none";
+            
+            // Відображення знаку ≈ для поточного року
+            document.getElementById(`${side}Approx`).style.display = isCurrentYear ? "inline" : "none";
 
-            // Оновлення тексту
-            document.getElementById(`${side}Cumulative`).innerText = Math.floor(cumulative).toLocaleString('en-US');
-            document.getElementById(`${side}Rate`).innerText = displayRate.toLocaleString('en-US', {
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2
+            // Форматування чисел
+            const rateFormatter = new Intl.NumberFormat('en-US', {
+                maximumFractionDigits: (currentTimeUnit === 'sec' || currentTimeUnit === 'min') ? 2 : 0
             });
 
-            // Оновлення іконки (якщо є в JSON, інакше плейсхолдер)
-            document.getElementById(`${side}Icon`).src = entity.image || `https://ui-avatars.com/api/?name=${entity.name}&background=random`;
-            
-            const maxVisible = 15000;
-            const heightFactor = Math.min((perSec / maxVisible) * 100, 90);
-            document.getElementById(`${side}Bar`).style.height = `${10 + heightFactor}%`;
+            document.getElementById(`${side}Rate`).innerText = rateFormatter.format(displayRate);
+            document.getElementById(`${side}Cumulative`).innerText = Math.floor(cumulative).toLocaleString('en-US');
+
+            // Оновлення іконок
+            const iconEl = document.getElementById(`${side}Icon`);
+            iconEl.src = entity.image || `https://ui-avatars.com/api/?name=${entity.name}&background=333&color=fff&size=64`;
+
+            // Масштаб бару
+            const height = Math.min((basePerSec / 15000) * 100, 85);
+            document.getElementById(`${side}Bar`).style.height = `${15 + height}%`;
         });
 
         requestAnimationFrame(update);
@@ -106,3 +145,4 @@ function startTickers() {
 }
 
 init();
+                
