@@ -102,6 +102,49 @@ button.active {
     margin-bottom: 15px;
 }
 
+.card-controls {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.mode-switch {
+    font-size: 9px;
+    padding: 4px 8px;
+    border: 1px solid #333;
+    background: transparent;
+    color: var(--text-dim);
+    border-radius: 4px;
+}
+
+.mode-switch.active[data-mode="spending"] {
+    background: rgba(255, 77, 77, 0.2);
+    color: var(--red-accent);
+    border-color: var(--red-accent);
+}
+
+.mode-switch.active[data-mode="income"] {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--green-accent);
+    border-color: var(--green-accent);
+}
+
+.entity-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.entity-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #333;
+}
+
+
 .spending .card-label { color: var(--red-accent); }
 .income .card-label { color: var(--green-accent); }
 
