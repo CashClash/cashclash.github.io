@@ -1,49 +1,78 @@
 let financialData = null;
-let currentYear = "2025";
+let currentYear = "2026"; // Встановлюємо актуальний рік
 let currentTimeUnit = "sec";
 
-// Завантаження даних
 async function init() {
     try {
         const response = await fetch('data.json');
         financialData = await response.json();
-        updateUI();
+        setupEventListeners(); // Додаємо слухачів подій
         startTickers();
     } catch (e) {
         console.error("Помилка завантаження даних:", e);
     }
 }
 
-// Функція оновлення цифр у реальному часі
+function setupEventListeners() {
+    // Слухач для перемикання одиниць часу
+    document.getElementById('timeTabs').addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            document.querySelectorAll('#timeTabs button').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentTimeUnit = e.target.dataset.unit;
+        }
+    });
+
+    // Слухач для перемикання років
+    document.getElementById('yearSelector').addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            document.querySelectorAll('#yearSelector button').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentYear = e.target.innerText; // Оновлюємо вибраний рік
+        }
+    });
+}
+
 function startTickers() {
     const update = () => {
+        if (!financialData) return;
+
         const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const secondsPassed = (now - startOfYear) / 1000;
+        const isCurrentYear = now.getFullYear().toString() === currentYear;
+        
+        let secondsPassed;
+        if (isCurrentYear) {
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            secondsPassed = (now - startOfYear) / 1000;
+        } else {
+            // Якщо обрано минулий рік, показуємо фінальну суму (кількість секунд у році)
+            secondsPassed = 365 * 24 * 60 * 60;
+        }
 
         financialData.entities.forEach((entity, index) => {
-            const yearData = entity.data[currentYear] || { income: 0, spending: 0 };
+            // Перевіряємо наявність даних для року, якщо немає — беремо 2025 або 0
+            const yearData = entity.data[currentYear] || entity.data["2025"] || { income: 0, spending: 0 };
             
-            // Визначаємо, що показувати (ліва картка - витрати, права - дохід)
             const valuePerYear = (index === 0) ? yearData.spending : yearData.income;
             const perSec = valuePerYear / (365 * 24 * 60 * 60);
             
             const cumulative = secondsPassed * perSec;
             
-            // Форматування одиниць (sec, min, hour, year)
             let displayRate = perSec;
             if (currentTimeUnit === "min") displayRate *= 60;
             if (currentTimeUnit === "hour") displayRate *= 3600;
             if (currentTimeUnit === "year") displayRate = valuePerYear;
 
-            // Оновлення DOM
             const prefix = index === 0 ? "left" : "right";
-            document.getElementById(`${prefix}Cumulative`).innerText = cumulative.toLocaleString('en-US', {maximumFractionDigits: 0});
+            
+            // Оновлення тексту
+            document.getElementById(`${prefix}Cumulative`).innerText = Math.floor(cumulative).toLocaleString('en-US');
             document.getElementById(`${prefix}Rate`).innerText = displayRate.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             
-            // Оновлення висоти бару (пропорційно)
-            const barHeight = Math.min((perSec / 1000) * 100, 100); // Спрощена логіка масштабу
-            document.getElementById(`${prefix}Bar`).style.height = `${barHeight + 10}%`;
+            // Оновлення бару (анімація висоти)
+            const maxVisible = 10000; // Умовний масштаб для візуалізації
+            const heightFactor = Math.min((perSec / maxVisible) * 100, 90);
+            document.getElementById(`${prefix}Bar`).style.height = `${10 + heightFactor}%`;
         });
 
         requestAnimationFrame(update);
@@ -51,13 +80,5 @@ function startTickers() {
     update();
 }
 
-// Обробка кліків на кнопки (роки та таби)
-document.getElementById('timeTabs').addEventListener('click', (e) => {
-    if (e.target.tagName === 'BUTTON') {
-        document.querySelectorAll('#timeTabs button').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        currentTimeUnit = e.target.dataset.unit;
-    }
-});
-
 init();
+                
