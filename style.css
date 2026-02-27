@@ -1,4 +1,3 @@
-/* --- 1. ЗМІННІ ТА ТЕМИ --- */
 :root {
     --bg-color: #0d0d0d;
     --card-bg: #1a1a1a;
@@ -19,54 +18,67 @@
     --nav-btn-bg: #e4e6eb;
 }
 
-/* --- 2. БАЗОВІ --- */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: 0.3s;
-}
+body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; transition: 0.3s; }
 
-/* --- 3. АДАПТИВНИЙ КОНТЕЙНЕР --- */
-.app-container {
-    width: 100%;
-    max-width: 1200px; /* Дозволяємо розширюватися */
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.app-container { width: 100%; max-width: 1200px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
 
-/* --- 4. ШАПКА ТА НАВІГАЦІЯ --- */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-}
+header { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
 
 h1 { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
 
-.lang-selector { display: flex; gap: 8px; }
-.lang-btn { width: 22px; height: 16px; cursor: pointer; opacity: 0.4; border-radius: 2px; }
-.lang-btn.active { opacity: 1; border: 1px solid var(--text-main); }
-
-.year-selector, .time-tabs {
+/* СТИЛЬНІ ПІДКЛАДКИ */
+.tool-wrapper {
+    background: var(--nav-btn-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
     display: flex;
-    gap: 5px;
-    overflow-x: auto;
-    padding-bottom: 5px;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    height: 34px;
+    transition: 0.2s;
 }
+.tool-wrapper:hover { border-color: var(--text-dim); }
+
+.theme-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text-main); }
+
+/* CUSTOM LANG SELECTOR */
+.lang-custom { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+.lang-custom img { width: 20px; height: 14px; border-radius: 2px; object-fit: cover; }
+
+.lang-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    min-width: 140px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+.lang-dropdown.active { display: flex; }
+
+.lang-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    font-size: 12px;
+    color: var(--text-dim);
+    transition: 0.2s;
+}
+.lang-item:hover { background: var(--nav-btn-bg); color: var(--text-main); }
+.lang-item img { width: 18px; height: 12px; border-radius: 2px; }
+
+/* НАВІГАЦІЯ */
+.year-selector, .time-tabs { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; }
 nav button {
     background: var(--nav-btn-bg);
     border: 1px solid var(--border);
@@ -74,19 +86,12 @@ nav button {
     padding: 6px 12px;
     border-radius: 15px;
     font-size: 11px;
-    white-space: nowrap;
     cursor: pointer;
 }
 nav button.active { background: var(--text-main); color: var(--bg-color); }
 
-/* --- 5. СІТКА: ЗАВЖДИ ПОРУЧ (2 КОЛОНКИ) --- */
-.contrast-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Ось це ставить їх поруч на телефоні */
-    gap: 8px;
-    align-items: stretch;
-}
-
+/* КАРТКИ */
+.contrast-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .card {
     background: var(--card-bg);
     border-radius: 15px;
@@ -94,83 +99,61 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    min-width: 0; /* Щоб не розпирало */
 }
-
 .card.spending { border-top: 3px solid var(--red-accent); }
 .card.income { border-top: 3px solid var(--green-accent); }
 
-.card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-.entity-icon { width: 30px; height: 30px; border-radius: 6px; background: white; padding: 2px; }
-.entity-name { font-size: 13px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.entity-icon { width: 32px; height: 32px; border-radius: 6px; background: white; padding: 2px; }
+.entity-name { font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .visualizer {
-    height: 100px; /* Коротший на мобільних */
+    height: 100px;
     background: rgba(0, 0, 0, 0.15);
     margin: 10px 0;
     display: flex;
     justify-content: center;
     align-items: flex-end;
     border-radius: 8px;
-    overflow: hidden;
 }
-
-.bar { width: 40px; border-radius: 4px 4px 0 0; }
+.bar { width: 35px; border-radius: 4px 4px 0 0; transition: height 0.3s; }
 .spending .bar { background: linear-gradient(to top, #631414, var(--red-accent)); }
 .income .bar { background: linear-gradient(to top, #146332, var(--green-accent)); }
 
-.counter-group { text-align: center; }
+.counter-group { text-align: center; margin-bottom: 5px; }
 .cumulative { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .subtext { font-size: 8px; color: var(--text-dim); text-transform: uppercase; }
 
-.live-rate {
-    font-size: 15px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 8px;
-}
+.live-rate { font-size: 14px; font-weight: bold; text-align: center; color: var(--text-main); }
 
 .mode-switcher {
     display: flex;
-    gap: 2px;
-    margin-bottom: 8px;
     background: var(--nav-btn-bg);
     padding: 2px;
     border-radius: 6px;
-    width: fit-content;
     align-self: center;
+    margin-bottom: 10px;
 }
 .mode-switcher button {
-    padding: 2px 6px;
+    padding: 3px 8px;
     font-size: 9px;
     border: none;
     background: transparent;
     color: var(--text-dim);
     cursor: pointer;
 }
-.mode-switcher button.active {
-    background: var(--card-bg);
-    color: var(--text-main);
-    border-radius: 4px;
-}
-
-/* --- 6. ПЕРЕМИКАЧ ТЕМИ ТА ФУТЕР --- */
-.btn-tool { background: var(--nav-btn-bg); border: 1px solid var(--border); color: var(--text-main); padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+.mode-switcher button.active { background: var(--card-bg); color: var(--text-main); border-radius: 4px; }
 
 .details-list { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
 .detail-item { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); }
 
-footer { padding: 20px; text-align: center; font-size: 10px; color: var(--text-dim); }
-
-/* --- 7. АДАПТИВНІСТЬ ДЛЯ ВЕЛИКИХ ЕКРАНІВ --- */
 @media (min-width: 900px) {
-    .app-container { padding: 30px; gap: 20px; }
+    .app-container { padding: 20px; gap: 20px; }
     .contrast-grid { gap: 20px; }
-    .card { padding: 24px; }
-    .entity-name { font-size: 20px; }
-    .cumulative { font-size: 28px; }
-    .live-rate { font-size: 24px; }
-    .visualizer { height: 180px; }
-    .entity-icon { width: 48px; height: 48px; }
-    h1 { font-size: 14px; }
+    .card { padding: 20px; }
+    .entity-name { font-size: 18px; }
+    .cumulative { font-size: 26px; }
+    .live-rate { font-size: 20px; }
+    .visualizer { height: 160px; }
+    .entity-icon { width: 44px; height: 44px; }
 }
