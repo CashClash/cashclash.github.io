@@ -1,9 +1,11 @@
-let financialData = null;
+let currentLang = 'en';
 let currentYear = "2026";
 let currentTimeUnit = "sec";
 let cardModes = { left: "spending", right: "income" };
+let financialData = { left: null, right: null };
 let drift = { left: 1, right: 1 };
 
+const availableLangs = ['en', 'ua', 'pl'];
 const multipliers = {
     sec: 1, min: 60, hour: 3600, day: 86400,
     week: 604800, month: 2592000, year: 31536000
@@ -13,15 +15,66 @@ const rateFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2,
 const wholeFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 
 async function init() {
+    // 1. Тема (Dark/Light)
+    applyInitialTheme();
+
+    // 2. Мова (Браузер або LocalStorage)
+    const browserLang = navigator.language.split('-')[0];
+    currentLang = localStorage.getItem('lang') || (availableLangs.includes(browserLang) ? browserLang : 'en');
+    
+    await loadLanguage(currentLang);
+    setupEventListeners();
+    setupLangSelector();
+    startTickers();
+}
+
+async function loadLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.documentElement.lang = lang;
+
     try {
-        const response = await fetch('data.json');
-        financialData = await response.json();
-        setupEventListeners();
-        startTickers();
-    } catch (e) { console.error("Error:", e); }
+        // Завантажуємо тексти інтерфейсу
+        const mainRes = await fetch(`i18n/${lang}/main.json`);
+        const mainTexts = await mainRes.json();
+        applyInterfaceTexts(mainTexts);
+
+        // Завантажуємо фінансові дані (nasa та musk як приклад id)
+        const leftRes = await fetch(`i18n/${lang}/data/nasa.json`);
+        const rightRes = await fetch(`i18n/${lang}/data/musk.json`);
+        
+        financialData.left = await leftRes.json();
+        financialData.right = await rightRes.json();
+        
+        updateDetails("left");
+        updateDetails("right");
+    } catch (e) {
+        console.error("Error loading language files:", e);
+    }
+}
+
+function applyInterfaceTexts(t) {
+    // Основні тексти
+    document.getElementById('mainTitle').innerText = t.ui.title;
+    document.getElementById('donateTitle').innerText = t.donate.title;
+    document.getElementById('donateDesc').innerText = t.donate.desc;
+    document.getElementById('donateBtn').innerText = t.donate.btn_text;
+    document.getElementById('footerCreated').innerText = t.ui.created_by;
+    document.getElementById('footerSlogan').innerText = t.ui.slogan;
+    document.getElementById('seoContent').innerHTML = t.seo_text;
+
+    // Тексти всередині карток (якщо є в main.json)
+    const labels = ["labelLeftSpend", "labelRightSpend", "labelLeftInc", "labelRightInc"];
+    labels.forEach(id => {
+        const mode = id.toLowerCase().includes('spend') ? 'spending' : 'income';
+        document.getElementById(id).innerText = t.ui[mode].toUpperCase();
+    });
+
+    document.querySelectorAll('.subtext').forEach(el => el.innerText = t.ui.cumulative_label);
 }
 
 function setupEventListeners() {
+    // Вибір часу
     document.getElementById('timeTabs').addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON') {
             document.querySelectorAll('#timeTabs button').forEach(b => b.classList.remove('active'));
@@ -30,17 +83,18 @@ function setupEventListeners() {
         }
     });
 
+    // Вибір року
     document.getElementById('yearSelector').addEventListener('click', (e) => {
         if (e.target.tagName === 'BUTTON') {
             document.querySelectorAll('#yearSelector button').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             currentYear = e.target.innerText;
-            // Оновлюємо деталі (категорії) відразу при зміні року
             updateDetails("left");
             updateDetails("right");
         }
     });
 
+    // Перемикач режимів (Spending/Income)
     document.querySelectorAll('.mode-switch').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const card = e.target.closest('.card');
@@ -52,18 +106,36 @@ function setupEventListeners() {
             updateDetails(side);
         });
     });
+
+    // Перемикач теми
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+}
+
+function setupLangSelector() {
+    const container = document.getElementById('langSelector');
+    container.innerHTML = '';
+    availableLangs.forEach(lang => {
+        const img = document.createElement('img');
+        img.src = `i18n/${lang}/${lang}.png`; // Шлях до прапорця
+        img.className = `lang-btn ${lang === currentLang ? 'active' : ''}`;
+        img.alt = lang.toUpperCase();
+        img.onclick = async () => {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            img.classList.add('active');
+            await loadLanguage(lang);
+        };
+        container.appendChild(img);
+    });
 }
 
 function updateDetails(side) {
-    if (!financialData) return;
-    const entity = side === "left" ? financialData.entities[0] : financialData.entities[1];
-    const effectiveYear = currentYear === "Total" ? "2026" : currentYear;
-    const yearData = entity.data[effectiveYear];
+    const data = financialData[side];
+    if (!data) return;
+    
+    const yearData = data.data[currentYear];
     const mode = cardModes[side];
-
     if (!yearData || !yearData[mode]) return;
 
-    // Оновлення списку категорій
     const detailsContainer = document.getElementById(`${side}Details`);
     detailsContainer.innerHTML = '';
     
@@ -77,30 +149,40 @@ function updateDetails(side) {
         });
     }
 
-    // Оновлення методології
     const infoBtn = document.getElementById(`${side}Methodology`);
-    infoBtn.onclick = () => alert(`Methodology (${entity.name} - ${effectiveYear}):\n\n${yearData.methodology}`);
+    infoBtn.onclick = () => alert(yearData.methodology);
+}
+
+function applyInitialTheme() {
+    const savedTheme = localStorage.getItem('theme') || 
+        (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.body.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').innerText = savedTheme === 'dark' ? '🌙' : '☀️';
+}
+
+function toggleTheme() {
+    const current = document.body.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    document.getElementById('themeToggle').innerText = next === 'dark' ? '🌙' : '☀️';
 }
 
 function startTickers() {
     const update = () => {
-        if (!financialData) return;
         const now = new Date();
-        const realYear = "2026"; // Встановлюємо жорстко, бо ми в 2026-му
-        let effectiveYear = currentYear === "Total" ? "2026" : currentYear;
-        const isCurrentYear = effectiveYear === realYear;
-        
-        // Для минулих років secondsPassed = повний рік (статично)
+        const isCurrentYear = currentYear === "2026";
         let secondsPassed = isCurrentYear ? (now - new Date(now.getFullYear(), 0, 1)) / 1000 : multipliers.year;
 
-        financialData.entities.forEach((entity, index) => {
-            const side = index === 0 ? "left" : "right";
+        ["left", "right"].forEach((side) => {
+            const data = financialData[side];
+            if (!data) return;
+
             const mode = cardModes[side];
-            const yearData = entity.data[effectiveYear] || entity.data["2025"];
+            const yearData = data.data[currentYear];
             const baseValuePerYear = yearData[mode].total || 0;
             const basePerSec = baseValuePerYear / multipliers.year;
 
-            // Дрифт працює ТІЛЬКИ для поточного року
             if (isCurrentYear && currentTimeUnit !== "year") {
                 drift[side] += (Math.random() - 0.5) * 0.002;
                 drift[side] = Math.max(0.85, Math.min(drift[side], 1.15));
@@ -112,26 +194,23 @@ function startTickers() {
             const cumulative = secondsPassed * basePerSec;
             let displayRate = (currentTimeUnit === 'year') ? baseValuePerYear : currentRatePerSec * multipliers[currentTimeUnit];
             
-            // Оновлення UI
-            document.getElementById(`${side}Name`).innerText = entity.name;
-            document.getElementById(`${side}Type`).innerText = entity.category;
+            // UI Оновлення
+            document.getElementById(`${side}Name`).innerText = data.name;
+            document.getElementById(`${side}Type`).innerText = data.category;
             document.getElementById(`${side}Unit`).innerText = `/ ${currentTimeUnit}`;
             document.getElementById(`${side}Approx`).style.display = isCurrentYear ? "inline" : "none";
             
-            const activeFormatter = (currentTimeUnit === 'sec' || currentTimeUnit === 'min') ? rateFormatter : wholeFormatter;
-            document.getElementById(`${side}Rate`).innerText = activeFormatter.format(displayRate);
+            const formatter = (['sec', 'min'].includes(currentTimeUnit)) ? rateFormatter : wholeFormatter;
+            document.getElementById(`${side}Rate`).innerText = formatter.format(displayRate);
             document.getElementById(`${side}Cumulative`).innerText = wholeFormatter.format(Math.floor(cumulative));
-            document.getElementById(`${side}Icon`).src = entity.image;
+            document.getElementById(`${side}Icon`).src = data.image;
 
-            // Висота бару
+            // Висота бару (базується на 8000$/сек як візуальному максимумі)
             let heightFactor = (basePerSec / 8000) * 100; 
             document.getElementById(`${side}Bar`).style.height = `${Math.max(8, Math.min(heightFactor, 92))}%`;
         });
         requestAnimationFrame(update);
     };
-    
-    updateDetails("left");
-    updateDetails("right");
     update();
 }
 
