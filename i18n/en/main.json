@@ -6,6 +6,14 @@
     "spending": "Spend",
     "income": "Income",
     "cumulative_label": "accumulated since January 1st",
+    "units": {
+      "sec": "sec",
+      "min": "min",
+      "hour": "hour",
+      "day": "day",
+      "week": "week",
+      "month": "month"
+    },
     "footer_created": "Created:",
     "footer_slogan": "Small tools, big dreams"
   },
