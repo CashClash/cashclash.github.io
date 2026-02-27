@@ -9,9 +9,18 @@
 <body data-theme="dark">
     <div class="app-container">
         <header>
-            <div id="langSelector"></div>
+            <div class="tool-wrapper" id="langWrapper">
+                <div class="lang-custom" id="langSelector" onclick="toggleLangMenu(event)">
+                    </div>
+                <div class="lang-dropdown" id="langDropdown">
+                    </div>
+            </div>
+
             <h1 id="mainTitle">CONTRAST</h1>
-            <button onclick="toggleTheme()" id="themeToggle" style="background:none; border:none; cursor:pointer; font-size:18px;">🌙</button>
+
+            <div class="tool-wrapper" onclick="toggleTheme()">
+                <button id="themeToggle" class="theme-btn">🌙</button>
+            </div>
         </header>
 
         <nav id="yearSelector">
@@ -65,5 +74,4 @@
     </div>
     <script src="script.js"></script>
 </body>
-                    </html>
-                                                                                                      
+</html>
