@@ -6,6 +6,14 @@
     "spending": "Витрати",
     "income": "Доходи",
     "cumulative_label": "накопичено з 1 січня",
+    "units": {
+      "sec": "сек",
+      "min": "хв",
+      "hour": "год",
+      "day": "день",
+      "week": "тижд",
+      "month": "міс"
+    },
     "footer_created": "Створено:",
     "footer_slogan": "Маленькі інструменти, великі мрії"
   },
