@@ -9,8 +9,8 @@
 <body data-theme="dark">
     <div class="app-container">
         <header>
-            <div class="tool-wrapper" id="langWrapper">
-                <div class="lang-custom" id="langSelector" onclick="toggleLangMenu(event)">
+            <div class="tool-wrapper" id="langWrapper" onclick="toggleLangMenu(event)">
+                <div class="lang-custom" id="langSelector">
                     </div>
                 <div class="lang-dropdown" id="langDropdown">
                     </div>
@@ -71,7 +71,7 @@
                     <div class="cumulative" id="rightCumulative">0</div>
                     <div class="subtext" id="rightCumLabel">cumulative</div>
                 </div>
-                <div class="live-rate"><span id="rightApprox">≈</span><span id="rightRate">0</span> <small id="rightUnit">/sec</small></div>
+                <div class="live-rate"><span id="leftApprox">≈</span><span id="rightRate">0</span> <small id="rightUnit">/sec</small></div>
                 <div class="details-list" id="rightDetails"></div>
             </div>
         </main>
