@@ -90,10 +90,62 @@ button.active {
     gap: 10px;
 }
 
+/* Нові стилі для деталей */
+.details-list {
+    margin-top: 15px;
+    font-size: 10px;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-dim);
+}
+
+.detail-name {
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detail-value {
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+/* Іконка методології */
+.methodology-trigger {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: help;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #333;
+}
+
+.methodology-trigger:hover {
+    background: #333;
+    color: white;
+}
+
 .card {
     background: var(--card-bg);
     border-radius: 16px;
     padding: 18px 14px;
+    position: relative;
     display: flex;
     flex-direction: column;
     border: 1px solid #222;
