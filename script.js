@@ -1,30 +1,33 @@
 let currentLang = 'ua';
-let currentYear = "2026";
-let currentTimeUnit = "sec";
-let cardModes = { left: "spending", right: "income" };
-let financialData = { left: null, right: null };
-let drift = { left: 1, right: 1 };
-let langLabels = {}; // Сюди завантажимо назви мов
-
-const multipliers = {
-    sec: 1, min: 60, hour: 3600, day: 86400,
-    week: 604800, month: 2592000, year: 31536000
-};
-
-const rateFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const wholeFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const availableLangs = ['ua', 'en']; // Додайте сюди коди мов, які у вас є
+let langDataCache = {}; 
 
 async function init() {
     currentLang = localStorage.getItem('lang') || 'ua';
     applyInitialTheme();
+    // Попередньо завантажуємо назви для всіх мов, щоб побудувати меню
+    await preloadLangNames();
     await loadLanguage(currentLang);
     setupEventListeners();
     startTickers();
 }
 
+async function preloadLangNames() {
+    for (let lang of availableLangs) {
+        try {
+            const res = await fetch(`i18n/${lang}/main.json`).then(r => r.json());
+            langDataCache[lang] = {
+                langName: res.ui.lang,  // "Українська"
+                shortName: res.ui.short // "UA"
+            };
+        } catch (e) { console.error(`Failed to preload ${lang}`, e); }
+    }
+}
+
 async function loadLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('lang', lang);
+    
     try {
         const [main, nasa, musk] = await Promise.all([
             fetch(`i18n/${lang}/main.json`).then(r => r.json()),
@@ -35,56 +38,42 @@ async function loadLanguage(lang) {
         financialData.left = nasa;
         financialData.right = musk;
 
-        // Завантажуємо назви всіх мов для списку
-        const availableLangs = ['ua', 'en']; 
-        for (let l of availableLangs) {
-            if (!langLabels[l]) {
-                const res = await fetch(`i18n/${l}/main.json`).then(r => r.json());
-                langLabels[l] = res.ui.lang;
-            }
-        }
-
         applyMainTexts(main);
         renderLangSelector();
         updateUI();
-    } catch (e) { console.error("Error loading language", e); }
-}
-
-function applyMainTexts(main) {
-    document.getElementById('mainTitle').innerText = main.ui.title;
-    document.getElementById('leftCumLabel').innerText = main.ui.cumulative_label;
-    document.getElementById('rightCumLabel').innerText = main.ui.cumulative_label;
+    } catch (e) { console.error("Error loading language content", e); }
 }
 
 function renderLangSelector() {
     const selector = document.getElementById('langSelector');
     const dropdown = document.getElementById('langDropdown');
-    const availableLangs = ['ua', 'en'];
 
-    // Кнопка: прапор + назва поточної мови
+    // Кнопка: прапор + SHORT + стрілочка
+    const current = langDataCache[currentLang];
     selector.innerHTML = `
         <img src="i18n/${currentLang}/${currentLang.toUpperCase()}.png">
-        <span>${langLabels[currentLang]}</span>
+        <span>${current ? current.shortName : currentLang}</span>
+        <span class="arrow-down">▼</span>
     `;
 
-    // Список: всі інші мови
+    // Список: повні назви мов (LANG)
     dropdown.innerHTML = availableLangs.map(l => `
         <div class="lang-item" onclick="loadLanguage('${l}')">
             <img src="i18n/${l}/${l.toUpperCase()}.png">
-            <span>${langLabels[l]}</span>
+            <span>${langDataCache[l] ? langDataCache[l].langName : l}</span>
         </div>
     `).join('');
 }
 
-function toggleLangMenu(e) {
-    e.stopPropagation();
+function toggleLangMenu(event) {
+    event.stopPropagation();
     document.getElementById('langDropdown').classList.toggle('active');
 }
 
-// Закриваємо меню при кліку в будь-якому місці
-window.onclick = () => {
+// Закриття меню при кліку зовні
+window.addEventListener('click', () => {
     document.getElementById('langDropdown').classList.remove('active');
-};
+});
 
 function toggleMode(side, mode) {
     cardModes[side] = mode;
