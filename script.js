@@ -77,8 +77,9 @@ function updateUI() {
 function startTickers() {
     const update = () => {
         const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const secondsPassed = (now - startOfYear) / 1000;
+        // Рахуємо секунди для 2026 року (від початку року до зараз)
+        const startOfSelectedYear = new Date(parseInt(currentYear), 0, 1);
+        let secondsPassed = (now - startOfSelectedYear) / 1000;
 
         ["left", "right"].forEach(side => {
             const data = financialData[side];
@@ -87,17 +88,25 @@ function startTickers() {
             const baseTotal = data.data[currentYear][mode].total;
             const basePerSec = baseTotal / multipliers.year;
 
+            let displayCumulative = 0;
+
             if (currentYear === "2026") {
+                // ДИНАМІКА: Числа ростуть, drift працює
                 drift[side] += (Math.random() - 0.5) * 0.002;
                 drift[side] = Math.max(0.95, Math.min(drift[side], 1.05));
-            } else { drift[side] = 1; }
+                displayCumulative = secondsPassed * basePerSec;
+            } else { 
+                // СТАТИКА: Числа не ростуть, drift вимкнено, показуємо фінальний total
+                drift[side] = 1; 
+                displayCumulative = baseTotal;
+            }
 
             const currentRate = basePerSec * drift[side] * multipliers[currentTimeUnit];
             
             document.getElementById(`${side}Name`).innerText = data.name;
             document.getElementById(`${side}Icon`).src = data.image;
             document.getElementById(`${side}Rate`).innerText = (['sec', 'min'].includes(currentTimeUnit)) ? rateFormatter.format(currentRate) : wholeFormatter.format(currentRate);
-            document.getElementById(`${side}Cumulative`).innerText = wholeFormatter.format(secondsPassed * basePerSec);
+            document.getElementById(`${side}Cumulative`).innerText = wholeFormatter.format(displayCumulative);
             document.getElementById(`${side}Unit`).innerText = `/ ${currentTimeUnit}`;
             document.getElementById(`${side}Approx`).style.visibility = (currentYear === "2026") ? "visible" : "hidden";
 
@@ -128,9 +137,11 @@ function setupEventListeners() {
 }
 
 function toggleTheme() {
-    const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    const current = document.body.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
     document.body.setAttribute('data-theme', next);
     document.getElementById('themeToggle').innerText = next === 'dark' ? '🌙' : '☀️';
 }
 
 init();
+                                  
