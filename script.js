@@ -1,11 +1,23 @@
 let currentLang = 'ua';
-const availableLangs = ['ua', 'en']; // Додайте сюди коди мов, які у вас є
+const availableLangs = ['ua', 'en']; 
 let langDataCache = {}; 
+let currentYear = "2026";
+let currentTimeUnit = "sec";
+let cardModes = { left: "spending", right: "income" };
+let financialData = { left: null, right: null };
+let drift = { left: 1, right: 1 };
+
+const multipliers = {
+    sec: 1, min: 60, hour: 3600, day: 86400,
+    week: 604800, month: 2592000, year: 31536000
+};
+
+const rateFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const wholeFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 
 async function init() {
     currentLang = localStorage.getItem('lang') || 'ua';
     applyInitialTheme();
-    // Попередньо завантажуємо назви для всіх мов, щоб побудувати меню
     await preloadLangNames();
     await loadLanguage(currentLang);
     setupEventListeners();
@@ -17,8 +29,8 @@ async function preloadLangNames() {
         try {
             const res = await fetch(`i18n/${lang}/main.json`).then(r => r.json());
             langDataCache[lang] = {
-                langName: res.ui.lang,  // "Українська"
-                shortName: res.ui.short // "UA"
+                langName: res.ui.lang,  
+                shortName: res.ui.short 
             };
         } catch (e) { console.error(`Failed to preload ${lang}`, e); }
     }
@@ -44,11 +56,21 @@ async function loadLanguage(lang) {
     } catch (e) { console.error("Error loading language content", e); }
 }
 
+function applyMainTexts(main) {
+    document.getElementById('mainTitle').innerText = main.ui.title;
+    document.getElementById('leftCumLabel').innerText = main.ui.cumulative_label;
+    document.getElementById('rightCumLabel').innerText = main.ui.cumulative_label;
+    // Оновлюємо текст кнопок перемикача
+    document.getElementById('leftBtnSpending').innerText = main.ui.spending_short || "Spend";
+    document.getElementById('leftBtnIncome').innerText = main.ui.income_short || "In";
+    document.getElementById('rightBtnSpending').innerText = main.ui.spending_short || "Spend";
+    document.getElementById('rightBtnIncome').innerText = main.ui.income_short || "In";
+}
+
 function renderLangSelector() {
     const selector = document.getElementById('langSelector');
     const dropdown = document.getElementById('langDropdown');
 
-    // Кнопка: прапор + SHORT + стрілочка
     const current = langDataCache[currentLang];
     selector.innerHTML = `
         <img src="i18n/${currentLang}/${currentLang.toUpperCase()}.png">
@@ -56,7 +78,6 @@ function renderLangSelector() {
         <span class="arrow-down">▼</span>
     `;
 
-    // Список: повні назви мов (LANG)
     dropdown.innerHTML = availableLangs.map(l => `
         <div class="lang-item" onclick="loadLanguage('${l}')">
             <img src="i18n/${l}/${l.toUpperCase()}.png">
@@ -70,7 +91,6 @@ function toggleLangMenu(event) {
     document.getElementById('langDropdown').classList.toggle('active');
 }
 
-// Закриття меню при кліку зовні
 window.addEventListener('click', () => {
     document.getElementById('langDropdown').classList.remove('active');
 });
@@ -104,7 +124,8 @@ function startTickers() {
 
         ["left", "right"].forEach(side => {
             const data = financialData[side];
-            if (!data) return;
+            if (!data || !data.data[currentYear]) return;
+            
             const mode = cardModes[side];
             const baseTotal = data.data[currentYear][mode].total;
             const basePerSec = baseTotal / multipliers.year;
@@ -169,4 +190,3 @@ function toggleTheme() {
 }
 
 init();
-                                             
