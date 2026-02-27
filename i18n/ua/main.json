@@ -1,6 +1,7 @@
 {
   "ui": {
     "title": "ФІНАНСОВИЙ КОНТРАСТ LIVE",
+    "lang" : "UA",
     "spending": "Витрати",
     "income": "Доходи",
     "cumulative_label": "накопичено з 1 січня",
