@@ -147,13 +147,25 @@ function startTickers() {
         const startOfYear = new Date(parseInt(currentYear), 0, 1);
         let secondsPassed = (now - startOfYear) / 1000;
 
+        // 1. Знаходимо МАКСИМАЛЬНЕ значення серед обох карток для масштабу (поза циклом)
+        let maxTotal = 0;
+        ["left", "right"].forEach(side => {
+            const data = financialData[side];
+            if (data && data.data[currentYear]) {
+                const mode = cardModes[side];
+                maxTotal = Math.max(maxTotal, data.data[currentYear][mode].total);
+            }
+        });
+
         ["left", "right"].forEach(side => {
             const data = financialData[side];
             if (!data || !data.data[currentYear]) return;
+            
             const mode = cardModes[side];
             const baseTotal = data.data[currentYear][mode].total;
             const basePerSec = baseTotal / multipliers.year;
 
+            // Логіка лічильника
             let cumulative = (currentYear === "2026") ? secondsPassed * basePerSec : baseTotal;
             if (currentYear === "2026") {
                 drift[side] += (Math.random() - 0.5) * 0.002;
@@ -162,17 +174,17 @@ function startTickers() {
 
             const rate = basePerSec * drift[side] * multipliers[currentTimeUnit];
             
+            // Оновлення тексту
             document.getElementById(`${side}Name`).innerText = data.name;
             document.getElementById(`${side}Icon`).src = data.image;
             document.getElementById(`${side}Rate`).innerText = (['sec', 'min'].includes(currentTimeUnit)) ? rateFormatter.format(rate) : wholeFormatter.format(rate);
             document.getElementById(`${side}Cumulative`).innerText = wholeFormatter.format(cumulative);
             document.getElementById(`${side}Unit`).innerText = window.langUnits ? window.langUnits[currentTimeUnit] : `/${currentTimeUnit}`;
-            
-            const approxEl = document.getElementById(`${side}Approx`);
-            if(approxEl) approxEl.style.visibility = (currentYear === "2026") ? "visible" : "hidden";
 
+            // --- ВІЗУАЛІЗАЦІЯ (ГРАФІК) ---
             const visualizer = document.getElementById(`${side}Visualizer`);
             if (visualizer) {
+                // Створюємо стовпчики, якщо їх немає
                 if (visualizer.children.length !== 12) {
                     visualizer.innerHTML = ''; 
                     for (let i = 0; i < 12; i++) {
@@ -183,21 +195,37 @@ function startTickers() {
                 }
 
                 const columns = visualizer.children;
-                const currentMonth = new Date().getMonth();
+                const currentMonth = now.getMonth();
+                const daysInMonth = new Date(now.getFullYear(), currentMonth + 1, 0).getDate();
+                const monthProgress = now.getDate() / daysInMonth;
 
                 for (let i = 0; i < 12; i++) {
                     const col = columns[i];
-                    const monthFactor = (i + 1) / 12;
-                    const targetHeight = (basePerSec / 10000) * 100 * monthFactor;
-                    
-                    col.style.height = `${Math.min(Math.max(targetHeight, 5), 95)}%`;
-                    col.style.backgroundColor = (mode === 'spending') ? 'var(--red-accent)' : 'var(--green-accent)';
-                    
-                    if (i <= currentMonth || currentYear !== "2026") {
+                    let heightPercent = 0;
+
+                    if (i < currentMonth || currentYear !== "2026") {
+                        // Минулі місяці (або весь минулий рік)
+                        heightPercent = ((i + 1) / 12) * (baseTotal / maxTotal) * 100;
+                        col.classList.add('active');
+                    } else if (i === currentMonth && currentYear === "2026") {
+                        // Поточний місяць (росте)
+                        const prevMonthsHeight = (i / 12) * (baseTotal / maxTotal) * 100;
+                        const thisMonthMaxHeight = (1 / 12) * (baseTotal / maxTotal) * 100;
+                        heightPercent = prevMonthsHeight + (thisMonthMaxHeight * monthProgress);
                         col.classList.add('active');
                     } else {
+                        // Майбутнє (прозоре)
+                        heightPercent = 0;
                         col.classList.remove('active');
                     }
+
+                    col.style.height = `${Math.max(heightPercent, 1)}%`;
+                    
+                    // Стилізація через змінні CSS
+                    const color = (mode === 'spending') ? '#ff4d4d' : '#00ff88';
+                    const shadow = (mode === 'spending') ? 'rgba(255, 77, 77, 0.5)' : 'rgba(0, 255, 136, 0.5)';
+                    col.style.setProperty('--accent-color', color);
+                    col.style.setProperty('--accent-shadow', shadow);
                 }
             }
         });
