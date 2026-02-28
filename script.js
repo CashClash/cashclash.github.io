@@ -47,7 +47,7 @@ async function loadLanguage(lang) {
         ]);
         financialData.left = nasa;
         financialData.right = musk;
-        calculateAbsoluteMax();
+        calculateGlobalMaxes();
         applyMainTexts(main);
         renderLangSelector();
         updateUI();
@@ -142,37 +142,49 @@ function updateUI() {
     });
 }
 
-let absoluteMax = 0;
+let globalMaxes = { income: 0, spending: 0 };
 
-function calculateAbsoluteMax() {
+function calculateGlobalMaxes() {
+    globalMaxes = { income: 0, spending: 0 }; // Скидаємо
     ["left", "right"].forEach(side => {
         const data = financialData[side];
         if (!data) return;
         Object.keys(data.data).forEach(year => {
-            const spending = data.data[year].spending.total;
-            const income = data.data[year].income.total;
-            absoluteMax = Math.max(absoluteMax, spending, income);
+            globalMaxes.income = Math.max(globalMaxes.income, data.data[year].income.total);
+            globalMaxes.spending = Math.max(globalMaxes.spending, data.data[year].spending.total);
         });
     });
 }
 
+// 1. Оновлена допоміжна функція (додай її замість старої calculateAbsoluteMax)
+let globalMaxes = { income: 0, spending: 0 };
+
+function calculateGlobalMaxes() {
+    globalMaxes = { income: 0, spending: 0 }; 
+    ["left", "right"].forEach(side => {
+        const data = financialData[side];
+        if (!data) return;
+        Object.keys(data.data).forEach(year => {
+            globalMaxes.income = Math.max(globalMaxes.income, data.data[year].income.total || 0);
+            globalMaxes.spending = Math.max(globalMaxes.spending, data.data[year].spending.total || 0);
+        });
+    });
+}
+
+// 2. Оновлена основна функція тікера
 function startTickers() {
     const update = () => {
         const now = new Date();
         const startOfYear = new Date(parseInt(currentYear), 0, 1);
         let secondsPassed = (now - startOfYear) / 1000;
 
-        // 1. Спочатку знайдемо ГЛОБАЛЬНИЙ максимум для правильного масштабування обох карток
-        // let globalMax = 0;
-        // ["left", "right"].forEach(side => {
-        //     const data = financialData[side];
-        //     if (data && data.data[currentYear]) {
-        //         const mode = cardModes[side];
-        //         globalMax = Math.max(globalMax, data.data[currentYear][mode].total);
-        //     }
-        // });
+        // Визначаємо масштаб на основі обраних зараз режимів (Spending або Income)
+        // Це дозволяє графікам "вирости", коли обрані витрати
+        const currentContextMax = Math.max(
+            globalMaxes[cardModes.left], 
+            globalMaxes[cardModes.right]
+        ) || 1; 
 
-        // 2. Тепер проходимо по кожній стороні та оновлюємо дані й графік
         ["left", "right"].forEach(side => {
             const data = financialData[side];
             if (!data || !data.data[currentYear]) return;
@@ -200,7 +212,6 @@ function startTickers() {
             // --- ВІЗУАЛІЗАЦІЯ (ГРАФІК СТОВПЧИКАМИ) ---
             const visualizer = document.getElementById(`${side}Visualizer`);
             if (visualizer) {
-                // Створюємо 12 стовпчиків-скелетів, якщо їх ще немає
                 if (visualizer.children.length !== 12) {
                     visualizer.innerHTML = Array(12).fill('<div class="bar-column"></div>').join('');
                 }
@@ -214,28 +225,24 @@ function startTickers() {
                     const col = columns[i];
                     let heightPercent = 0;
 
-                    // Висота базується на відношенні річної суми об'єкта до глобального максимуму
-                    const baseHeight = (yearlyTotal / absoluteMax) * 100;
+                    // Використовуємо currentContextMax для адаптивного масштабу
+                    const baseHeight = (yearlyTotal / currentContextMax) * 100;
 
                     if (i < currentMonth || currentYear !== "2026") {
-                        // Минулі місяці: повна висота для цього місяця
                         heightPercent = ((i + 1) / 12) * baseHeight;
                         col.className = 'bar-column active';
                     } else if (i === currentMonth && currentYear === "2026") {
-                        // Поточний місяць: росте плавно
                         const prevHeight = (i / 12) * baseHeight;
                         const thisMonthMax = (1 / 12) * baseHeight;
                         heightPercent = prevHeight + (thisMonthMax * monthProgress);
                         col.className = 'bar-column active current';
                     } else {
-                        // Майбутні місяці: напівпрозорий "план" (скелет)
                         heightPercent = ((i + 1) / 12) * baseHeight;
                         col.className = 'bar-column';
                     }
 
                     col.style.height = `${Math.max(heightPercent, 2)}%`;
                     
-                    // Кольори (без градієнтів, чистий стиль)
                     const color = (mode === 'spending') ? '#ff4d4d' : '#00ff88';
                     const shadow = (mode === 'spending') ? 'rgba(255, 77, 77, 0.3)' : 'rgba(0, 255, 136, 0.3)';
                     col.style.setProperty('--accent-color', color);
