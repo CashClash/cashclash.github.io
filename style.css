@@ -153,26 +153,37 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 
 .counter-group { text-align: center; margin-bottom: 5px; }
 
-.approx {
-    display: inline-block;
-    width: 20px; /* Фіксуємо його місце */
-    opacity: 0.6;
-    text-align: center;
-    margin-right: 5px;
-}
-
 .subtext { font-size: 8px; color: var(--text-dim); text-transform: uppercase; }
 
 /* LIVE RATE SECTION - ВИПРАВЛЕНО */
-.live-rate { 
-    text-align: center; 
-    display: flex;
-    flex-direction: column;
+.live-rate .rate-main {
+    display: flex; /* Змінюємо на flex для кращого контролю */
     align-items: center;
-    margin-top: 10px;
+    justify-content: center;
+    min-width: 320px; /* Трохи збільшуємо запас */
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
 }
 
-.rate-main, .cumulative { 
+.approx {
+    display: inline-block;
+    width: 24px; /* Чітко задана ширина */
+    flex-shrink: 0; /* Щоб він не стискався */
+    text-align: right;
+    margin-right: 8px;
+    opacity: 0.6;
+    font-family: 'Inter', sans-serif; /* Теж Inter, щоб не було конфліктів */
+}
+
+[id$="Rate"] {
+    display: inline-block;
+    text-align: left; /* Цифри ростуть вправо, але стоять на місці зліва */
+    min-width: 140px; /* Достатньо для чисел типу 4,424.27 */
+}
+
+.cumulative { 
     font-family: 'Inter', sans-serif;
     font-weight: 800; /* Товсті, сочні цифри */
     
@@ -307,6 +318,8 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     letter-spacing: 4px;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
+    .live-rate .rate-main { min-width: 450px; }
+    [id$="Rate"] { min-width: 220px; }
     .app-container { padding: 20px; gap: 20px; }
     .contrast-grid { gap: 20px; }
     .card { padding: 25px; } /* Трохи більше простору всередині карти */
