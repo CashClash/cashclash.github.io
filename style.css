@@ -191,8 +191,9 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 
 .donate-btn {
     display: inline-block;
-    background: #D4AF37 !important; /* Золото */
-    color: #000000 !important;      /* Чорний текст для максимального контрасту */
+    /* Використовуємо твій зелений колір з графіку */
+    background: var(--green-accent) !important; 
+    color: #000000 !important; /* Чорний текст найкраще читається на такому фоні */
     padding: 10px 24px;
     border-radius: 20px;
     text-decoration: none;
@@ -200,13 +201,15 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     font-weight: 800;
     transition: 0.3s;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    /* Додаємо зелене світіння (тінь) */
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
 }
 
 .donate-btn:hover {
     transform: translateY(-2px);
-    background: #FFD700 !important; /* Яскравіше золото при наведенні */
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    /* Робимо трохи яскравішим при наведенні */
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
 }
 
 
