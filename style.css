@@ -100,32 +100,35 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 .entity-name { font-size: 13px; font-weight: bold; }
 
 .visualizer {
-    height: 120px; /* Трохи вище для солідності */
-    background: rgba(255, 255, 255, 0.03); /* Дуже легкий фон контейнера */
+    height: 100px;
+    background: rgba(255, 255, 255, 0.02); /* Ледь помітна підкладка */
     margin: 15px 0;
     display: flex;
     align-items: flex-end; 
     justify-content: space-between;
-    padding: 12px;
+    padding: 8px;
     border-radius: 12px;
-    border: 1px solid var(--border);
-    gap: 4px;
+    gap: 2px; /* Мінімальний зазор для цілісності */
 }
 
 .bar-column {
     flex: 1;
-    border-radius: 4px 4px 2px 2px; /* Гарне скруглення зверху */
-    transition: height 0.1s linear, opacity 0.3s ease; /* Плавний ріст */
-    min-height: 1px;
-    opacity: 0; /* Майбутні місяці тепер повністю прозорі */
+    background: var(--text-dim); /* Колір для майбутніх місяців */
+    opacity: 0.1; /* Майбутні місяці — ледь видимі "скелети" */
+    border-radius: 2px;
+    transition: height 0.3s ease, background 0.3s ease, opacity 0.3s ease;
 }
 
+/* Активні місяці (минулі та поточний) */
 .bar-column.active {
     opacity: 1;
-    /* Додаємо внутрішній градієнт для об'єму */
-    background: linear-gradient(to bottom, var(--accent-color), rgba(0,0,0,0.3));
-    /* Неонове свічення */
-    filter: drop-shadow(0 0 5px var(--accent-shadow));
+    background: var(--accent-color); /* Чистий колір без градієнтів */
+    box-shadow: 0 -2px 10px var(--accent-shadow); /* Свічення тільки зверху */
+}
+
+/* Поточний місяць можна виділити трохи яскравіше */
+.bar-column.current {
+    filter: brightness(1.3);
 }
 
 .counter-group { text-align: center; margin-bottom: 5px; }
