@@ -113,6 +113,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 
 .bar-column {
     flex: 1;
+    min-height: 4px;
     background: var(--accent-color);
     border-radius: 2px 2px 0 0; /* Скруглюємо тільки верх, як у справжніх графіках */
     /* Плавний перехід висоти за 0.8 секунди з "живим" ефектом сповільнення */
