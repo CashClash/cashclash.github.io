@@ -142,34 +142,27 @@ function updateUI() {
     });
 }
 
-// 1. Оновлена допоміжна функція (додай її замість старої calculateAbsoluteMax)
-let globalMaxes = { income: 0, spending: 0 };
-
-function calculateGlobalMaxes() {
-    globalMaxes = { income: 0, spending: 0 }; // Скидаємо
-    ["left", "right"].forEach(side => {
-        const data = financialData[side];
-        if (!data) return;
-        Object.keys(data.data).forEach(year => {
-            globalMaxes.income = Math.max(globalMaxes.income, data.data[year].income.total);
-            globalMaxes.spending = Math.max(globalMaxes.spending, data.data[year].spending.total);
-        });
-    });
-}
-
-// 2. Оновлена основна функція тікера
 function startTickers() {
     const update = () => {
         const now = new Date();
         const startOfYear = new Date(parseInt(currentYear), 0, 1);
         let secondsPassed = (now - startOfYear) / 1000;
 
-        // Визначаємо масштаб на основі обраних зараз режимів (Spending або Income)
-        // Це дозволяє графікам "вирости", коли обрані витрати
-        const currentContextMax = Math.max(
-            globalMaxes[cardModes.left], 
-            globalMaxes[cardModes.right]
-        ) || 1; 
+        // --- НОВА ЛОГІКА МАСШТАБУВАННЯ ---
+        // Знаходимо найбільше значення серед вибраних режимів за всі роки
+        let currentContextMax = 0;
+        ["left", "right"].forEach(side => {
+            const data = financialData[side];
+            const mode = cardModes[side]; // Дивимось, що вибрано: spending чи income
+            if (!data) return;
+
+            Object.keys(data.data).forEach(year => {
+                const val = data.data[year][mode].total;
+                if (val > currentContextMax) currentContextMax = val;
+            });
+        });
+        currentContextMax = currentContextMax || 1; // Захист від 0
+        // --------------------------------
 
         ["left", "right"].forEach(side => {
             const data = financialData[side];
@@ -179,7 +172,6 @@ function startTickers() {
             const yearlyTotal = data.data[currentYear][mode].total;
             const basePerSec = yearlyTotal / multipliers.year;
 
-            // Логіка лічильника накопичення
             let cumulative = (currentYear === "2026") ? secondsPassed * basePerSec : yearlyTotal;
             if (currentYear === "2026") {
                 drift[side] += (Math.random() - 0.5) * 0.002;
@@ -188,14 +180,12 @@ function startTickers() {
 
             const rate = basePerSec * drift[side] * multipliers[currentTimeUnit];
             
-            // Оновлення текстових значень
             document.getElementById(`${side}Name`).innerText = data.name;
             document.getElementById(`${side}Icon`).src = data.image;
             document.getElementById(`${side}Rate`).innerText = (['sec', 'min'].includes(currentTimeUnit)) ? rateFormatter.format(rate) : wholeFormatter.format(rate);
             document.getElementById(`${side}Cumulative`).innerText = wholeFormatter.format(cumulative);
             document.getElementById(`${side}Unit`).innerText = window.langUnits ? window.langUnits[currentTimeUnit] : `/${currentTimeUnit}`;
 
-            // --- ВІЗУАЛІЗАЦІЯ (ГРАФІК СТОВПЧИКАМИ) ---
             const visualizer = document.getElementById(`${side}Visualizer`);
             if (visualizer) {
                 if (visualizer.children.length !== 12) {
@@ -209,11 +199,11 @@ function startTickers() {
 
                 for (let i = 0; i < 12; i++) {
                     const col = columns[i];
-                    let heightPercent = 0;
-
-                    // Використовуємо currentContextMax для адаптивного масштабу
+                    
+                    // Тепер baseHeight рахується від динамічного currentContextMax
                     const baseHeight = (yearlyTotal / currentContextMax) * 100;
 
+                    let heightPercent = 0;
                     if (i < currentMonth || currentYear !== "2026") {
                         heightPercent = ((i + 1) / 12) * baseHeight;
                         col.className = 'bar-column active';
