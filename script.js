@@ -47,6 +47,7 @@ async function loadLanguage(lang) {
         ]);
         financialData.left = nasa;
         financialData.right = musk;
+        calculateAbsoluteMax();
         applyMainTexts(main);
         renderLangSelector();
         updateUI();
