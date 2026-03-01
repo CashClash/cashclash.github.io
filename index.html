@@ -43,9 +43,13 @@
                     <button id="leftBtnSpending" class="active" onclick="toggleMode('left', 'spending')"></button>
                     <button id="leftBtnIncome" onclick="toggleMode('left', 'income')"></button>
                 </div>
-                <div class="card-header">
+                <div class="card-header" onclick="toggleEntityMenu('left', event)">
                     <img id="leftIcon" class="entity-icon" src="">
-                    <span id="leftName" class="entity-name">...</span>
+                    <div class="name-wrapper">
+                        <span id="leftName" class="entity-name">...</span>
+                        <span class="selector-arrow">▼</span>
+                    </div>
+                    <div id="leftEntityMenu" class="entity-dropdown"></div>
                 </div>
                 <div class="visualizer" id="leftVisualizer"></div>
                 <div class="counter-group">
@@ -67,9 +71,13 @@
                     <button id="rightBtnSpending" onclick="toggleMode('right', 'spending')"></button>
                     <button id="rightBtnIncome" class="active" onclick="toggleMode('right', 'income')"></button>
                 </div>
-                <div class="card-header">
+                <div class="card-header" onclick="toggleEntityMenu('right', event)">
                     <img id="rightIcon" class="entity-icon" src="">
-                    <span id="rightName" class="entity-name">...</span>
+                    <div class="name-wrapper">
+                        <span id="rightName" class="entity-name">...</span>
+                        <span class="selector-arrow">▼</span>
+                    </div>
+                    <div id="rightEntityMenu" class="entity-dropdown"></div>
                 </div>
                 <div class="visualizer" id="rightVisualizer"></div>
                 <div class="counter-group">
