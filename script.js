@@ -367,4 +367,48 @@ function setupEventListeners() {
     });
 }
 
+async function takeScreenshot() {
+    const element = document.querySelector('.contrast-grid');
+    const btn = event.currentTarget;
+    
+    // Візуальний відгук: міняємо іконку на час обробки
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = "⏳";
+
+    try {
+        const canvas = await html2canvas(element, {
+            backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-color'),
+            scale: 2, // Вища якість
+            logging: false,
+            useCORS: true // Щоб картинки героїв (Bezos, Musk) не блокувалися
+        });
+
+        // Перетворюємо в картинку
+        const image = canvas.toDataURL("image/png");
+
+        // Якщо браузер підтримує "Share API" (мобільні), пропонуємо поділитися файлом
+        if (navigator.share && navigator.canShare) {
+            const blob = await (await fetch(image)).blob();
+            const file = new File([blob], 'contrast_snapshot.png', { type: 'image/png' });
+            
+            await navigator.share({
+                files: [file],
+                title: 'Contrast Live',
+                text: 'Дивись, як змінюються статки багатіїв у реальному часі!'
+            });
+        } else {
+            // Якщо десктоп — просто скачуємо файл
+            const link = document.createElement('a');
+            link.download = `contrast_${currentYear}.png`;
+            link.href = image;
+            link.click();
+        }
+    } catch (err) {
+        console.error("Помилка скріншота:", err);
+        alert("Не вдалося створити знімок. Спробуйте звичайний скріншот екрана.");
+    } finally {
+        btn.innerHTML = originalContent;
+    }
+}
+
 init();
