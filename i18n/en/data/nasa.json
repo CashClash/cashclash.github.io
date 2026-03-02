@@ -1,7 +1,7 @@
 {
       "id": "nasa",
       "name": "NASA",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/e/e5/NASA_logo.svg",
+      "image": "images/nasa.svg",
       "category": "government",
       "color": "#ff4d4d",
       "data": {
