@@ -524,7 +524,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     .year-badge {
         font-size: 12px;
         padding: 4px 10px;
-        bottom: 15px;
+        top: 45px;
         right: 15px;
     }
 
