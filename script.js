@@ -7,6 +7,7 @@ let currentTimeUnit = "sec";
 let cardModes = { left: "spending", right: "income" };
 let financialData = { left: null, right: null };
 let drift = { left: 1, right: 1 };
+let displayValues = { leftCumulative: 0, rightCumulative: 0, leftRate: 0, rightRate: 0 };
 let entityCache = {};
 
 const multipliers = {
@@ -268,12 +269,29 @@ function startTickers() {
             
             document.getElementById(`${side}Name`).innerText = data.name;
             document.getElementById(`${side}Icon`).src = data.image;
-            document.getElementById(`${side}Rate`).innerText = (['sec', 'min'].includes(currentTimeUnit)) ? rateFormatter.format(rate) : wholeFormatter.format(rate);
+
+            // --- ЛОГІКА ПРОКРУТКИ ЧИСЕЛ (LERP) ---
+            const lerpFactor = 0.1; 
+            
+            // Плавне оновлення Rate
+            displayValues[`${side}Rate`] += (rate - displayValues[`${side}Rate`]) * lerpFactor;
+            const rateVal = displayValues[`${side}Rate`];
+            
+            document.getElementById(`${side}Rate`).innerText = (['sec', 'min'].includes(currentTimeUnit)) 
+                ? rateFormatter.format(rateVal) 
+                : wholeFormatter.format(rateVal);
             
             // --- ЛОГІКА КУМУЛЯТИВНОГО ЧИСЛА ТА ПУЛЬСАЦІЇ ---
             const cumElement = document.getElementById(`${side}Cumulative`);
             if (cumElement) {
-                cumElement.innerText = wholeFormatter.format(cumulative);
+                // Плавне оновлення Cumulative (тільки якщо не Live режим, щоб не було затримки)
+                if (currentYear === "2026") {
+                    displayValues[`${side}Cumulative`] = cumulative;
+                } else {
+                    displayValues[`${side}Cumulative`] += (cumulative - displayValues[`${side}Cumulative`]) * lerpFactor;
+                }
+                
+                cumElement.innerText = wholeFormatter.format(displayValues[`${side}Cumulative`]);
                 
                 // Якщо загальний баланс мінусовий — вмикаємо пульсацію "кровотечі"
                 if (yearlyTotal < 0) {
