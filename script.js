@@ -419,7 +419,7 @@ async function takeScreenshot() {
                     text: `${window.uiLabels.shareText}\nhttps://cashclash.github.io/`
                 });
             } catch (shareErr) {
-                console.log("Юзер відмінив share");
+                console.log("User cancelled share");
             }
         } else {
             // Резервний метод: Скачування
