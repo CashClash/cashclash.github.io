@@ -112,7 +112,6 @@ window.addEventListener('click', () => {
 });
 
 function applyMainTexts(main) {
-    document.getElementById('mainTitle').innerText = main.ui.title;
 
     window.uiLabels = {
         income: main.ui.income_label,
