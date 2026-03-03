@@ -291,11 +291,14 @@ function startTickers() {
                 if (mode === 'spending') {
                     labelText = window.uiLabels.spent;
                 } else {
-                    // Якщо доходи, але число мінусове (втрата капіталу)
                     labelText = (yearlyTotal >= 0) ? window.uiLabels.income : window.uiLabels.loss;
                 }
+                
                 const labelElement = document.getElementById(`${side}CumLabel`);
-                if (labelElement) labelElement.innerText = labelText;
+                if (labelElement) {
+                    // Додаємо пробіл та поточний рік до тексту з JSON
+                    labelElement.innerText = `${labelText} ${currentYear}`;
+                }
             }
             // -----------------------------------------------------------
 
