@@ -114,6 +114,7 @@ window.addEventListener('click', () => {
 function applyMainTexts(main) {
 
     window.uiLabels = {
+        shareText: main.ui.share_text,
         income: main.ui.income_label,
         spent: main.ui.spent_label,
         loss: main.ui.loss_label
@@ -414,8 +415,8 @@ async function takeScreenshot() {
             try {
                 await navigator.share({
                     files: [file],
-                    title: 'Contrast Live',
-                    text: 'Дивись на цю різницю!'
+                    title: 'CashClash',
+                    text: window.uiLabels.shareText + " https://cashclash.github.io/"
                 });
             } catch (shareErr) {
                 // Якщо юзер скасував "поділитися" — нічого не робимо
