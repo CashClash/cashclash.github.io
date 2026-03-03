@@ -1,6 +1,5 @@
 {
   "ui": {
-    "title": "CashClash Live",
     "lang": "English",
     "short": "EN",
     "spending": "Spend",
@@ -8,6 +7,7 @@
     "income_label": "accumulated since January 1",
     "spent_label" : "spent since January 1",
     "loss_label" : "lost since January 1",
+    "share_text": "Just look at this gap in the numbers! 🤯💸",
     "units": {
       "sec": "per sec",
       "min": "per min",
