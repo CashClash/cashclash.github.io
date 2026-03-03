@@ -286,19 +286,25 @@ function startTickers() {
             document.getElementById(`${side}Unit`).innerText = window.langUnits ? window.langUnits[currentTimeUnit] : `/${currentTimeUnit}`;
 
             // --- НОВА ЛОГІКА ВИБОРУ ЯРЛИКА (Підпис під великим числом) ---
-            let labelText = "";
             if (window.uiLabels) {
-                if (mode === 'spending') {
-                    labelText = window.uiLabels.spent;
-                } else {
-                    labelText = (yearlyTotal >= 0) ? window.uiLabels.income : window.uiLabels.loss;
-                }
+                const labelText = (mode === 'spending') ? window.uiLabels.spent : 
+                                 (yearlyTotal >= 0 ? window.uiLabels.income : window.uiLabels.loss);
                 
                 const labelElement = document.getElementById(`${side}CumLabel`);
                 if (labelElement) {
-                    // Додаємо пробіл та поточний рік до тексту з JSON
-                    labelElement.innerText = `${labelText} ${currentYear}`;
+                    labelElement.innerText = labelText; // Тепер тут просто "ВИТРАЧЕНО" або "ЗАРОБЛЕНО"
                 }
+            }
+
+            // --- ДОДАЄМО ТЕГ РОКУ НА КАРТКУ ---
+            const card = document.getElementById(`${side}Card`);
+            let yearBadge = card.querySelector('.year-badge');
+            if (!yearBadge) {
+                yearBadge = document.createElement('div');
+                yearBadge.className = 'year-badge';
+                card.appendChild(yearBadge);
+            }
+            yearBadge.innerText = currentYear;
             }
             // -----------------------------------------------------------
 
