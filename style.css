@@ -212,7 +212,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 .entity-item:hover { background: var(--nav-btn-bg); color: var(--green-accent); }
 .entity-item img { width: 20px; height: 20px; border-radius: 4px; }
 .entity-icon { width: 32px; height: 32px; border-radius: 6px; background: white; padding: 2px; }
-.entity-name { font-size: clamp(10px, 3vw, 13px); font-weight: bold; }
+.entity-name { font-size: clamp(10px, 3vw, 13px); font-weight: bold; text-transform: uppercase;}
 
 .visualizer {
     height: 100px;
