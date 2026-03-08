@@ -435,7 +435,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 }
 
 
-.seo-section { font-size: 14px; color: var(--text-dim); line-height: 1.8; padding: 0 10px; }
+.seo-section { font-size: 14px; max-width: 100%; color: var(--text-dim); line-height: 1.8; padding: 0 10px; text-align: justify;}
 .seo-section h2 { font-size: 18px; color: var(--text-main); margin-bottom: 10px; }
 
 .footer-bottom { text-align: center; border-top: 1px solid var(--border); padding-top: 25px; font-size: 13px; color: var(--text-dim); }
