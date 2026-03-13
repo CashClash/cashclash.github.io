@@ -2,7 +2,7 @@
   "id": "healthcare-canada",
   "name": "Охорона здоров'я Канади",
   "image": "images/healthcare-canada.png",
-  "category": "уряд",
+  "category": "департамент",
   "data": {
     "2026": {
       "income": {
