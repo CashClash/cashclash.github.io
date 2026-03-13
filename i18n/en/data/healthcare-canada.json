@@ -2,7 +2,7 @@
       "id": "healthcare-canada",
       "name": "Healthcare Canada",
       "image": "images/healthcare-canada.png",
-      "category": "government",
+      "category": "department",
       "data": {
         "2026": {
           "income": {
