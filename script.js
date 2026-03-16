@@ -3,7 +3,10 @@ const availableLangs = ['ua', 'en'];
 const entityList = ['african-union', 'amazon', 'amnesty-international', 'apple', 'arab-league', 'asean', 'bernard-arnault', 'bezos', 'bill-gates', 'bundeswehr',
                     'cern', 'china', 'coca-cola', 'cristiano-ronaldo', 'department-of-energy', 'disney', 'dubai', 'eda', 'elon-musk', 'emirates', 'esa', 'european-union',
                     'faa', 'fbi', 'fifa', 'g7', 'gates-foundation', 'google', 'greenpeace', 'healthcare-canada', 'hong-kong', 'iceland', 'imf', 'indian-railways', 'irs',
-                    'japan-post-holdings', 'jensen-huang', 'kyiv', 'larry-ellison', 'london', 'los-angeles', 'mara'];
+                    'japan-post-holdings', 'jensen-huang', 'kyiv', 'larry-ellison', 'london', 'los-angeles', 'mara', 'mark-zuckerberg', 'microsoft', 'monaco', 'mrbeast',
+                    'msf', 'mukesh-ambani', 'nasa', 'nato', 'netflix', 'new-york', 'nhs', 'north-korea', 'open-society', 'paris', 'pbc', 'pentagon', 'red-cross',
+                    'rf-ministry-defense', 'rotary-foundation', 'salvation-army', 'saudi-aramco', 'seoul', 'shanghai', 'singapore', 'south-sudan', 'switzerland', 'taylor-swift',
+                    'terrorist-country', 'tokio', 'toyota', 'tsmc', 'tuvalu', 'ua-ministry-defense', 'uk-ministry-defense'];
 
 let langDataCache = {}; 
 let currentYear = "2026";
