@@ -1,0 +1,86 @@
+{
+      "id": "south-sudan",
+      "name": "SOUTH SUDAN",
+      "image": "images/south-sudan.svg",
+      "category": "country",
+      "data": {
+        "2026": {
+          "income": {
+            "total": 1285400000000,
+            "sources": [
+              "Projected Oil Revenue Recovery Estimates",
+              "South Sudan National Revenue Authority: 3-Year Strategic Growth Plan",
+              "Financial Data Scout: CAGR-based Revenue Projection"
+            ],
+            "breakdown": {
+              "oil_revenue": { "name": "Recovered Oil Export Royalties", "percent": 58.4 },
+              "non_oil_tax": { "name": "Consolidated Domestic Tax Base", "percent": 32.1 },
+              "external_grants": { "name": "International Multilateral Support", "percent": 9.5 }
+            }
+          },
+          "spending": {
+            "total": 1750200000000,
+            "breakdown": {
+              "security_defense": { "name": "National Security and Armed Forces", "percent": 30.2 },
+              "public_payroll": { "name": "Public Sector Wages and Arrears", "percent": 26.5 },
+              "debt_management": { "name": "Interest and Principal Repayments", "percent": 22.3 },
+              "infrastructure_recovery": { "name": "Oil Infrastructure and Road Restoration", "percent": 11.0 },
+              "social_development": { "name": "Humanitarian and Social Services", "percent": 10.0 }
+            }
+          },
+          "methodology": "Projections for 2026 use a 3-year CAGR (Compound Annual Growth Rate) of 12% for non-oil revenue and an estimated 40% recovery in oil transit volumes. Spending is modeled based on the 2025/26 Fiscal Strategy Paper, prioritizing debt servicing and the clearance of salary arrears accumulated during the 2024-2025 fiscal shock."
+        },
+        "2025": {
+          "income": {
+            "total": 942500000000,
+            "sources": [
+              "South Sudan Ministry of Finance and Planning: FY2024/25 Budget Update",
+              "World Bank Economic Monitor: South Sudan Oil Export Disruption Report",
+              "IMF Article IV Consultation - Supplementary Fiscal Data"
+            ],
+            "breakdown": {
+              "oil_revenue": { "name": "Disrupted Oil Export Royalties", "percent": 41.2 },
+              "non_oil_revenue": { "name": "Enhanced Domestic Tax Collection", "percent": 38.5 },
+              "international_assistance": { "name": "Emergency Budgetary Support and Grants", "percent": 20.3 }
+            }
+          },
+          "spending": {
+            "total": 1985600000000,
+            "breakdown": {
+              "security_sector": { "name": "National Security and Defense Forces", "percent": 35.4 },
+              "public_salaries": { "name": "Government Civil Service Payroll", "percent": 28.2 },
+              "debt_servicing": { "name": "Internal and External Debt Interest", "percent": 18.6 },
+              "social_services": { "name": "Health, Education and Humanitarian Response", "percent": 12.8 },
+              "infrastructure": { "name": "Emergency Road and Logistics Maintenance", "percent": 5.0 }
+            }
+          },
+          "methodology": "Calculation based on the 55% contraction in oil-sourced fiscal space due to the Sudan pipeline force majeure. Revenue figures account for the transition to aggressive non-oil tax enforcement. Spending reflects emergency prioritization of security and basic wage arrears over capital development projects."
+        },
+        "2024": {
+          "income": {
+            "total": 1852000000000,
+            "sources": [
+              "Ministry of Finance and Planning: Oil Revenue Projections",
+              "National Revenue Authority: Non-Oil Tax Collections",
+              "IMF Staff Country Report No. 24/327"
+            ],
+            "breakdown": {
+              "oil_revenue": { "name": "Gross Oil Revenue", "percent": 83.6 },
+              "non_oil_revenue": { "name": "Non-Oil Tax & Customs Revenue", "percent": 13.3 },
+              "grants": { "name": "International Grants & Aid", "percent": 3.1 }
+            }
+          },
+          "spending": {
+            "total": 2105014441619,
+            "breakdown": {
+              "wages_salaries": { "name": "Civil Servants Wages and Salaries", "percent": 21.6 },
+              "operating_expenses": { "name": "Government Operating Expenses", "percent": 14.3 },
+              "capital_expenditure": { "name": "Oil for Roads & Infrastructure", "percent": 28.5 },
+              "transfers": { "name": "Transfers to States and Oil Agencies", "percent": 15.1 },
+              "other": { "name": "Peace Implementation & Contingencies", "percent": 20.5 }
+            }
+          },
+          "methodology": "Data based on the FY 2023/24 Approved National Budget and the subsequent 2024/25 Budget Bill which revised the previous year's performance. Figures converted from South Sudanese Pounds (SSP) using official Ministry of Finance fiscal aggregates. Total spending includes the 'Oil for Roads' program which often bypasses standard treasury controls."
+        }
+      }
+    }
