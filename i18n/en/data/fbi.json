@@ -1,7 +1,7 @@
 {
   "id": "fbi",
   "name": "Federal Bureau of Investigation (FBI)",
-  "image": "images/FBI.svg",
+  "image": "images/fbi.svg",
   "category": "government",
   "data": {
     "2026": {
