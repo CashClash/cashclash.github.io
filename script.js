@@ -1,21 +1,7 @@
 let currentLang = 'ua';
 const availableLangs = ['ua', 'en']; 
 const entityList = ['nasa', 'elon-musk', 'bezos', 'netflix', 'south-sudan', 'us-defence-department',
-                    'tokio', 'european-union', 'healthcare-canada', 'red-cross', 'african-union',
-                    'amazon', 'amnesty-international', 'apple', 'arab-league',
-                    'asean', 'bernard-arnault', 'bill-gates', 'bundeswehr', 'cern', 'china',
-                    'coca-cola', 'cristiano-ronaldo', 'department-of-energy', 'disney', 'dubai',
-                    'eda', 'emirates', 'esa', 'faa', 'fbi', 'fifa', 'g7', 'gates-foundation',
-                    'google', 'greenpeace', 'hong-kong', 'iceland', 'imf', 'indian-railways',
-                    'irs', 'japan-post-holdings', 'jensen-huang', 'kyiv', 'larry-ellison',
-                    'london', 'los-angeles', 'mara', 'mark-zuckerberg', 'microsoft', 'monaco',
-                    'mrbeast', 'msf', 'mukesh-ambani', 'nato', 'new-york', 'nhs', 'north-korea',
-                    'open-society', 'paris', 'pbc', 'pentagon', 'rf-ministry-defense',
-                    'rotary-foundation', 'salvation-army', 'saudi-aramco', 'seoul', 'shanghai',
-                    'singapore', 'switzerland', 'taylor-swift', 'terrorist-country', 'toyota',
-                    'tsmc', 'tuvalu', 'ua-ministry-defense', 'uk-ministry-defense', 'ukraine',
-                    'un', 'unicef', 'us-department-education', 'usa', 'vatican', 'walmart',
-                    'warren-buffett', 'wellcome-trust', 'who', 'world-bank', 'wwf'];
+                    'tokio', 'european-union', 'healthcare-canada'];
 let langDataCache = {}; 
 let currentYear = "2026";
 let currentTimeUnit = "sec";
