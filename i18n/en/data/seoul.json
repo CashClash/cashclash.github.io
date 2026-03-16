@@ -1,7 +1,7 @@
 {
   "id": "seoul",
   "name": "Seoul",
-  "image": "images/Seoul.svg",
+  "image": "images/seoul.svg",
   "category": "city",
   "data": {
     "2026": {
