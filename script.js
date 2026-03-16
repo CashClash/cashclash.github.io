@@ -7,7 +7,7 @@ const entityList = ['african-union', 'amazon', 'amnesty-international', 'apple',
                     'msf', 'mukesh-ambani', 'nasa', 'nato', 'netflix', 'new-york', 'nhs', 'north-korea', 'open-society', 'paris', 'pbc', 'pentagon', 'red-cross',
                     'rf-ministry-defense', 'rotary-foundation', 'salvation-army', 'saudi-aramco', 'seoul', 'shanghai', 'singapore', 'south-sudan', 'switzerland', 'taylor-swift',
                     'terrorist-country', 'tokio', 'toyota', 'tsmc', 'tuvalu', 'ua-ministry-defense', 'uk-ministry-defense', 'ukraine', 'un', 'unicef', 'us-defence-department',
-                    'us-department-education', 'usa', 'vatican', 'walmart', 'warren-buffett'];
+                    'us-department-education', 'usa', 'vatican', 'walmart', 'warren-buffett', 'wellcome-trust', 'who', 'world-bank', 'wwf'];
 
 let langDataCache = {}; 
 let currentYear = "2026";
