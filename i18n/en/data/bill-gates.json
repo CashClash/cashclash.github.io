@@ -1,7 +1,7 @@
 {
   "id": "bill-gates",
   "name": "Bill Gates",
-  "image": "images/Bill-Gates.jpg",
+  "image": "images/bill-gates.jpg",
   "category": "person",
   "data": {
     "2026": {
