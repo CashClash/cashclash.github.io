@@ -1,7 +1,7 @@
 {
   "id": "bundeswehr",
   "name": "Bundeswehr",
-  "image": "images/Bundeswehr.svg",
+  "image": "images/bundeswehr.svg",
   "category": "government",
   "data": {
     "2026": {
