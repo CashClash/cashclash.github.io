@@ -1,7 +1,7 @@
 {
   "id": "irs",
   "name": "Internal Revenue Service (IRS)",
-  "image": "images/IRS.svg",
+  "image": "images/irs.svg",
   "category": "government",
   "data": {
     "2026": {
