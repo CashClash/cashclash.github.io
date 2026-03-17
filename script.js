@@ -453,50 +453,64 @@ async function takeScreenshot() {
     const btn = document.querySelector('.header-controls-right .tool-wrapper:first-child');
     const originalContent = btn.innerHTML;
     
+    // 1. МИТТЄВА РЕАКЦІЯ
+    btn.innerHTML = '...';
+    
     try {
-        btn.innerHTML = '...';
-        
-        // 1. ВИБИРАЄМО ТІЛЬКИ СІТКУ З КАРТКАМИ (це і є той мінімалізм)
         const target = document.querySelector('.contrast-grid');
         if (!target) return;
 
         const canvas = await html2canvas(target, {
             useCORS: true,
             allowTaint: false,
-            // Беремо колір фону прямо з body, щоб не було білих країв
             backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-color'),
-            scale: 2, 
+            scale: 2,
             onclone: (clonedDoc) => {
-                // Ховаємо підказки та стрілочки вибору всередині карток
+                // Ховаємо сміття
                 const toHide = clonedDoc.querySelectorAll('.info-tooltip-wrapper, .selector-arrow, .entity-dropdown');
                 toHide.forEach(el => el.style.display = 'none');
-                
-                // Додаємо трохи відступів зверху/знизу на самому скріншоті для краси
+
+                // ПРАВИЛЬНИЙ БЕЙДЖ РОКУ НА СКРІНШОТІ
+                clonedDoc.querySelectorAll('.card').forEach(card => {
+                    let badge = card.querySelector('.year-badge');
+                    if (!badge) {
+                        badge = document.createElement('div');
+                        badge.className = 'year-badge';
+                        card.appendChild(badge);
+                    }
+                    
+                    if (currentYear === "2026") {
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; background:#ff4d4d; border-radius:50%; margin-right:4px;"></span> LIVE 2026`;
+                        badge.style.color = '#ff4d4d';
+                    } else {
+                        badge.innerText = currentYear;
+                        badge.style.color = 'var(--text-dim)';
+                        badge.style.border = '1px solid var(--border)';
+                    }
+                });
+
+                // Вирівнюємо відступи сітки
                 const grid = clonedDoc.querySelector('.contrast-grid');
                 if (grid) {
-                    grid.style.padding = '20px 10px';
-                    grid.style.margin = '0';
+                    grid.style.padding = '30px 15px';
+                    grid.style.background = getComputedStyle(document.body).getPropertyValue('--bg-color');
                 }
             }
         });
 
         const image = canvas.toDataURL("image/png", 1.0);
         const blob = await (await fetch(image)).blob();
-        const file = new File([blob], 'cashclash_snapshot.png', { type: 'image/png' });
+        const file = new File([blob], `cashclash_${currentYear}.png`, { type: 'image/png' });
 
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share({
-                    files: [file],
-                    title: 'CashClash',
-                    text: `${window.uiLabels.shareText}\nhttps://cashclash.github.io/${currentLang}/`
-                });
-            } catch (shareErr) {
-                console.log("User cancelled share");
-            }
+            await navigator.share({
+                files: [file],
+                title: 'CashClash',
+                text: `${window.uiLabels.shareText}\nhttps://cashclash.github.io/${currentLang}/`
+            });
         } else {
             const link = document.createElement('a');
-            link.download = 'cashclash_snapshot.png';
+            link.download = `cashclash_${currentYear}.png`;
             link.href = image;
             link.click();
         }
