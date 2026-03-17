@@ -173,19 +173,19 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 }
 .name-wrapper { display: flex; align-items: center; gap: 8px; }
 .entity-selector {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Центруємо весь блок */
-    gap: 8px;               /* Фіксована відстань між текстом і стрілкою */
+    display: inline-flex;
+    align-items: flex-start; /* ВАЖЛИВО: вирівнює вміст по верхньому краю */
+    justify-content: center;
+    gap: 6px;
     cursor: pointer;
-    width: fit-content;      /* Блок підлаштовується під контент */
-    margin: 0 auto;         /* Центруємо сам блок у картці */
+    max-width: 100%;
 }
 .selector-arrow {
-    font-size: 12px;
+    font-size: 10px;
     color: var(--text-dim);
-    flex-shrink: 0;         /* Щоб стрілка не стискалася */
-    margin-top: 4px;        /* Трохи підрівняти по висоті, якщо треба */
+    flex-shrink: 0;
+    margin-top: 6px; /* Підганяємо вручну, щоб вона була на рівні першого рядка */
+    transition: transform 0.2s;
 }
 
 .entity-dropdown {
@@ -255,8 +255,8 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     font-size: 20px;
     font-weight: 700;
     text-transform: uppercase;
-    line-height: 1.2;
-    display: inline;         /* Щоб текст не займав весь рядок */
+    line-height: 1.2; /* Фіксуємо висоту рядка для точності */
+    display: inline;
 }
 
 .visualizer {
