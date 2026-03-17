@@ -596,7 +596,6 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     pointer-events: none;
     text-align: left;
 }
-
 .info-tooltip-wrapper:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
@@ -733,5 +732,4 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
         border-radius: 12px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.6);
     }
-    /* ---------------------------------------- */
-} /* Кінцева дужка медіа
+}
