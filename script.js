@@ -233,10 +233,14 @@ function updateUI() {
         const container = document.getElementById(`${side}Details`);
         const breakdown = data.data[currentYear][mode].breakdown;
         
-        container.innerHTML = Object.values(breakdown).map(item => {
-            
+        // --- НОВА ЛОГІКА СОРТУВАННЯ ---
+        // Перетворюємо об'єкт у масив і сортуємо за відсотком (від найбільшого)
+        const sortedItems = Object.values(breakdown).sort((a, b) => {
+            return Math.abs(b.percent) - Math.abs(a.percent);
+        });
+
+        container.innerHTML = sortedItems.map(item => {
             let barColor = 'var(--green-accent)';
-            
             if (mode === 'spending' || item.percent < 0) {
                 barColor = 'var(--red-accent)';
             }
@@ -255,6 +259,8 @@ function updateUI() {
                 </div>
             `;
         }).join('');
+        // ------------------------------
+
         const methElement = document.getElementById(`${side}Methodology`);
         if (methElement && data.data[currentYear].methodology) {
             methElement.innerText = data.data[currentYear].methodology;
