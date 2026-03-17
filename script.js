@@ -456,19 +456,27 @@ async function takeScreenshot() {
     try {
         btn.innerHTML = '...';
         
-        // 1. ВИПРАВЛЕННЯ: Чітко вказуємо, що фоткати (весь контейнер додатку)
-        const container = document.querySelector('.app-container');
-        if (!container) return;
+        // 1. ВИБИРАЄМО ТІЛЬКИ СІТКУ З КАРТКАМИ (це і є той мінімалізм)
+        const target = document.querySelector('.contrast-grid');
+        if (!target) return;
 
-        const canvas = await html2canvas(container, {
+        const canvas = await html2canvas(target, {
             useCORS: true,
             allowTaint: false,
+            // Беремо колір фону прямо з body, щоб не було білих країв
             backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-color'),
-            scale: 2,
+            scale: 2, 
             onclone: (clonedDoc) => {
-                // Ховаємо зайві елементи на скріншоті
-                const toHide = clonedDoc.querySelectorAll('.info-tooltip-wrapper, .selector-arrow, .lang-dropdown, .header-controls-right');
+                // Ховаємо підказки та стрілочки вибору всередині карток
+                const toHide = clonedDoc.querySelectorAll('.info-tooltip-wrapper, .selector-arrow, .entity-dropdown');
                 toHide.forEach(el => el.style.display = 'none');
+                
+                // Додаємо трохи відступів зверху/знизу на самому скріншоті для краси
+                const grid = clonedDoc.querySelector('.contrast-grid');
+                if (grid) {
+                    grid.style.padding = '20px 10px';
+                    grid.style.margin = '0';
+                }
             }
         });
 
@@ -476,7 +484,6 @@ async function takeScreenshot() {
         const blob = await (await fetch(image)).blob();
         const file = new File([blob], 'cashclash_snapshot.png', { type: 'image/png' });
 
-        // 2. ВИПРАВЛЕННЯ: Перевірка Share API
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({
@@ -488,7 +495,6 @@ async function takeScreenshot() {
                 console.log("User cancelled share");
             }
         } else {
-            // Резервний метод: Скачування
             const link = document.createElement('a');
             link.download = 'cashclash_snapshot.png';
             link.href = image;
@@ -496,7 +502,6 @@ async function takeScreenshot() {
         }
     } catch (err) {
         console.error("Screenshot error:", err);
-        alert(window.uiLabels.errorScreenshot || "Error creating screenshot.");
     } finally {
         btn.innerHTML = originalContent;
     }
