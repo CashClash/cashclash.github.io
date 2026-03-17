@@ -475,21 +475,20 @@ async function takeScreenshot(event) {
         const image = canvas.toDataURL("image/png", 1.0);
 
         // Перевіряємо Share API
+        const blob = await (await fetch(image)).blob();
+        const file = new File([blob], 'financial_contrast.png', { type: 'image/png' });
+
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            const blob = await (await fetch(image)).blob();
-            const file = new File([blob], 'financial_contrast.png', { type: 'image/png' });
-            
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'CashClash',
-                        text: `${window.uiLabels.shareText}\nhttps://cashclash.github.io/${currentLang}/`
-                    });
-                } catch (shareErr) {
-                    console.log("User cancelled share");
-                }
-            } else {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: 'CashClash',
+                    text: `${window.uiLabels.shareText}\nhttps://cashclash.github.io/${currentLang}/`
+                });
+            } catch (shareErr) {
+                console.log("User cancelled share");
+            }
+        } else {
             // Резервний метод: Скачування
             const link = document.createElement('a');
             link.download = 'financial_snapshot.png';
