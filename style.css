@@ -214,14 +214,13 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     max-width: 100%;
 }
 .selector-arrow {
-    display: inline-block;   /* Стрілка стає частиною тексту */
+    display: inline-block;
+    white-space: nowrap; /* Стрілка не переноситься без останнього слова */
     font-size: 10px;
     color: var(--text-dim);
-    margin-left: 4px;        /* Відступ від останньої літери */
-    vertical-align: middle;  /* Центруємо відносно літери */
-    line-height: 1;
+    margin-left: 4px;
     position: relative;
-    top: -2px;               /* Трохи піднімаємо, щоб була на рівні великих літер */
+    top: -1px;
 }
 
 .entity-dropdown {
@@ -686,23 +685,23 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     .visualizer { height: 200px; }
 
     /* Назви (NASA / ELON MUSK) */
-    .entity-name {
-        font-size: 20px;
-        font-weight: 700;
-        text-transform: uppercase;
-        display: inline;
-        line-height: 1.2;
-    }
-    .selector-arrow {
-        display: inline-block;
-        white-space: nowrap;
-        font-size: 12px;
-        color: var(--text-dim);
-        margin-left: 6px;
-        vertical-align: middle;
-        position: relative;
-        top: -2px;
-    }
+.entity-name {
+    font-size: clamp(14px, 4vw, 18px);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.2;
+    display: inline; /* Важливо для обтікання */
+}
+
+.selector-arrow {
+    display: inline-block;
+    white-space: nowrap; /* Стрілка не переноситься без останнього слова */
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: 4px;
+    position: relative;
+    top: -1px;
+}
 
     .subtext { font-size: 11px; }
 
