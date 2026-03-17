@@ -212,7 +212,23 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 }
 .entity-item:hover { background: var(--nav-btn-bg); color: var(--green-accent); }
 .entity-item img { width: 20px; height: 20px; border-radius: 4px; }
-.entity-icon { width: 32px; height: 32px; border-radius: 6px; background: white; padding: 2px; }
+.entity-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    background: #444; /* Темно-сіра підкладка */
+    border-radius: 50%; /* Кругла підкладка */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px; /* Відступ для іконки всередині */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Легка тінь */
+}
+
+.entity-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Розміщує іконку всередині підкладки */
+}
 .entity-name { font-size: clamp(10px, 3vw, 13px); font-weight: bold; text-transform: uppercase;}
 
 .visualizer {
