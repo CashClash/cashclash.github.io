@@ -1,4 +1,4 @@
-let currentLang = window.FORCE_LANG || 'en';
+let currentLang = window.location.pathname.includes('/en/') ? 'en' : 'ua';
 const availableLangs = ['ua', 'en']; 
 const entityList = ['african-union', 'amazon', 'amnesty-international', 'apple', 'arab-league', 'asean', 'bernard-arnault', 'bezos', 'bill-gates', 'bundeswehr',
                     'cern', 'china', 'coca-cola', 'cristiano-ronaldo', 'department-of-energy', 'disney', 'dubai', 'eda', 'elon-musk', 'emirates', 'esa', 'european-union',
@@ -180,20 +180,28 @@ function applyMainTexts(main) {
 function renderLangSelector() {
     const selector = document.getElementById('langSelector');
     const dropdown = document.getElementById('langDropdown');
-    const current = langDataCache[currentLang];
+    
+    const currentName = (langDataCache[currentLang] && langDataCache[currentLang].shortName) 
+                        ? langDataCache[currentLang].shortName 
+                        : currentLang.toUpperCase();
     
     selector.innerHTML = `
-        <img src="../${currentLang}/${currentLang.toUpperCase()}.png">
-        <span>${current ? current.shortName : currentLang.toUpperCase()}</span>
+        <img src="./${currentLang.toUpperCase()}.png">
+        <span>${currentName}</span>
         <span class="arrow-down">▼</span>
     `;
     
-    dropdown.innerHTML = availableLangs.map(l => `
-        <div class="lang-item" onclick="loadLanguage('${l}')">
-            <img src="../${l}/${l.toUpperCase()}.png">
-            <span>${langDataCache[l] ? langDataCache[l].langName : l}</span>
-        </div>
-    `).join('');
+    dropdown.innerHTML = availableLangs.map(l => {
+        const displayName = (langDataCache[l] && langDataCache[l].langName) 
+                            ? langDataCache[l].langName 
+                            : l.toUpperCase();
+        return `
+            <div class="lang-item" onclick="loadLanguage('${l}')">
+                <img src="../${l}/${l.toUpperCase()}.png">
+                <span>${displayName}</span>
+            </div>
+        `;
+    }).join('');
 }
 
 function toggleLangMenu(event) {
