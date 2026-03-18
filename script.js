@@ -391,7 +391,7 @@ function startTickers() {
                 }
 
                 if (currentYear === "2026") {
-                    badge.innerHTML = `<span class="live-dot"></span> LIVE ${currentYear}`;
+                    badge.innerHTML = `<span class="live-dot"></span> ${currentYear}`;
                     badge.className = 'year-badge live-active';
                     badge.style.display = 'flex';
                 } else {
