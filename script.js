@@ -370,9 +370,6 @@ function startTickers() {
 
             const rate = basePerSec * drift[side] * multipliers[currentTimeUnit];
             
-            const iconEl = document.getElementById(`${side}Icon`);
-            if(iconEl) iconEl.src = `../${data.image}`;
-
             const lerpFactor = 0.1;
             displayValues[`${side}Rate`] += (rate - displayValues[`${side}Rate`]) * lerpFactor;
             const rateVal = displayValues[`${side}Rate`];
@@ -483,14 +480,14 @@ function updateEntityName(side, name) {
 
     nameElement.innerText = name; 
     
-    // 1. Скидаємо стиль, щоб функція починала розрахунок з дефолтного розміру
+    // Скидаємо розмір до стандартного з CSS перед розрахунком
     nameElement.style.fontSize = ''; 
 
-    // 2. Викликаємо автоматичну підгонку (даємо мікро-затримку, щоб DOM встиг оновитися)
+    // Викликаємо автоматику з мікро-затримкою, щоб браузер встиг "відмалювати" текст
     setTimeout(() => {
         adjustFontSize(nameElement);
-        syncHeaderHeights(); // Вирівнюємо висоту після зміни шрифту
-    }, 0);
+        syncHeaderHeights(); 
+    }, 10);
 }
 
 async function takeScreenshot() {
