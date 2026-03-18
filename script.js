@@ -104,6 +104,7 @@ async function loadLanguage(lang) {
         renderLangSelector();
         renderEntityMenus();
         updateUI();
+        setTimeout(syncHeaderHeights, 100);
     } catch (e) { console.error("Error loading language/data", e); }
 }
 
@@ -472,6 +473,8 @@ function updateEntityName(side, name) {
     } else {
         nameElement.style.fontSize = ''; // Повертає значення з CSS
     }
+  
+    setTimeout(syncHeaderHeights, 0);
 }
 
 async function takeScreenshot() {
