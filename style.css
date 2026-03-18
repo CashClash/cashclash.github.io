@@ -214,9 +214,10 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     100% { opacity: 1; transform: scale(1); }
 }
 .name-wrapper {
-    flex: 1;
+    position: relative; /* Робимо контейнер базою для позиціонування стрілки */
+    display: block;      /* Повертаємо блоковий тип, щоб текст починався з самого краю */
+    padding-left: 0;     /* Переконайся, що тут немає внутрішнього відступу */
     text-align: left;
-    line-height: 1.2;
 }
 .entity-selector {
     display: flex;
@@ -226,10 +227,12 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     width: 100%;
 }
 .selector-arrow {
-    font-size: 8px; /* Робимо її трохи меншою, щоб не перетягувала увагу */
+    position: absolute;  /* Вириваємо стрілку з потоку тексту */
+    left: -14px;         /* Зміщуємо її вліво, у відступ між іконкою та текстом */
+    top: 4px;            /* Підганяємо висоту під верхній край першої літери */
+    font-size: 8px;      /* Маленький розмір, щоб виглядало акуратно */
     color: var(--text-dim);
-    margin-top: 5px; /* Підганяємо вертикально, щоб була на рівні середини літер першого рядка */
-    flex-shrink: 0;  /* Важливо: стрілка ніколи не стискається */
+    pointer-events: none; /* Щоб стрілка не заважала клікати по назві */
     transition: 0.3s;
 }
 
@@ -306,7 +309,8 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     font-weight: 700;
     text-transform: uppercase;
     line-height: 1.2;
-    word-break: break-word; /* Щоб довгі назви не ламали верстку */
+    display: inline-block; /* Щоб назва чітко тримала свій рядок */
+    vertical-align: top;
 }
 
 .visualizer {
