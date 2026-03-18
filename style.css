@@ -214,10 +214,11 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     100% { opacity: 1; transform: scale(1); }
 }
 .name-wrapper {
-    position: relative; /* Робимо контейнер базою для позиціонування стрілки */
-    display: block;      /* Повертаємо блоковий тип, щоб текст починався з самого краю */
-    padding-left: 0;     /* Переконайся, що тут немає внутрішнього відступу */
+    position: relative;
+    display: inline-block; /* Щоб контейнер був рівно по ширині тексту */
+    padding-left: 12px;    /* Це створює "бронь" для стрілки, щоб вона не штовхала текст */
     text-align: left;
+    vertical-align: top;
 }
 .entity-selector {
     display: flex;
@@ -227,13 +228,13 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     width: 100%;
 }
 .selector-arrow {
-    position: absolute;  /* Вириваємо стрілку з потоку тексту */
-    left: -14px;         /* Зміщуємо її вліво, у відступ між іконкою та текстом */
-    top: 4px;            /* Підганяємо висоту під верхній край першої літери */
-    font-size: 8px;      /* Маленький розмір, щоб виглядало акуратно */
+    position: absolute;
+    left: 0;               /* Тепер вона чітко на початку нашого паддінга */
+    top: 4px;              /* Регулюй цей параметр (3px-5px), щоб стрілка була на рівні верхньої лінії літер */
+    font-size: 9px;
     color: var(--text-dim);
-    pointer-events: none; /* Щоб стрілка не заважала клікати по назві */
-    transition: 0.3s;
+    pointer-events: none;
+    line-height: 1;        /* Щоб висота рядка іконки не додавала зайвих відступів */
 }
 
 .entity-dropdown.active + .entity-selector .selector-arrow {
@@ -309,8 +310,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     font-weight: 700;
     text-transform: uppercase;
     line-height: 1.2;
-    display: inline-block; /* Щоб назва чітко тримала свій рядок */
-    vertical-align: top;
+    display: block;
 }
 
 .visualizer {
