@@ -596,9 +596,9 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 /* Сама плашка з текстом */
 .tooltip-text {
     position: absolute;
-    top: 100%;       /* З'являється чітко під іконкою */
-    right: 0;        /* За замовчуванням притиснутий до правого краю */
-    width: 200px;    /* Трохи зменшив ширину для кращої сумісності */
+    top: 100%;
+    right: 0;
+    width: 200px;
     z-index: 100;
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -613,17 +613,14 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     transition: 0.2s;
     pointer-events: none;
     text-align: left;
-    margin-top: 5px; /* Зазор, щоб не перекривати іконку */
+    margin-top: 5px;
 }
 
-/* 2. Логіка для ЛІВОЇ колонки (щоб не вилізало за екран) */
-/* nth-child(odd) автоматично вибирає кожну непарну (1-шу, 3-тю) картку в сітці */
 .card:nth-child(odd) .tooltip-text {
-    right: auto;    /* Скасовуємо притискання до права */
-    left: 0;        /* Притискаємо до лівого краю картки */
+    right: auto;
+    left: 0;
 }
 
-/* 3. Поява при наведенні */
 .info-tooltip-wrapper:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
