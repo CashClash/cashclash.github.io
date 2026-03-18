@@ -17,6 +17,7 @@ let financialData = { left: null, right: null };
 let drift = { left: 1, right: 1 };
 let displayValues = { leftCumulative: 0, rightCumulative: 0, leftRate: 0, rightRate: 0 };
 let entityCache = {};
+let groupedEntities = {};
 
 const multipliers = {
     sec: 1, min: 60, hour: 3600, day: 86400,
@@ -44,6 +45,14 @@ async function preloadLangNames() {
                 shortName: res.ui.short 
             };
         } catch (e) { console.error(`Failed to preload ${lang}`, e); }
+    }
+  for (let id of entityList) {
+        try {
+            const res = await fetch(`./data/${id}.json`).then(r => r.json());
+            const cat = (res.category || "OTHER").toUpperCase();
+            if (!groupedEntities[cat]) groupedEntities[cat] = [];
+            groupedEntities[cat].push({ id, name: res.name });
+        } catch (e) { console.error(e); }
     }
 }
 
@@ -79,34 +88,38 @@ async function loadLanguage(lang) {
 function renderEntityMenus(filterText = '', side = null) {
     const sides = side ? [side] : ['left', 'right'];
 
-    // Формуємо список на основі ПОВНОГО entityList
-    const filteredIds = entityList.filter(id => 
-        id.replace(/-/g, ' ').toLowerCase().includes(filterText.toLowerCase())
-    );
-
     sides.forEach(s => {
         const dropdown = document.getElementById(`${s}EntityMenu`);
-        
         const searchHTML = `<input type="text" class="menu-search" placeholder="Search..." 
                             onclick="event.stopPropagation()" 
                             oninput="renderEntityMenus(this.value, '${s}')" value="${filterText}">`;
 
-        const contentHTML = filteredIds.map(id => {
-            const displayName = id.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-            
-            return `
-                <div class="entity-item" onclick="selectEntity('${s}', '${id}', event)">
-                    <div class="entity-icon-wrapper">
-                        <img src="../images/${id}.svg" onerror="this.src='../images/default.svg'" loading="lazy" class="entity-icon">
-                    </div>
-                    <span>${displayName}</span>
-                </div>
-            `;
-        }).join('');
+        let contentHTML = '';
 
-        if (filterText !== '') {
-            const listContainer = dropdown.querySelector('.menu-list-container');
-            if (listContainer) listContainer.innerHTML = contentHTML;
+        for (const [category, entities] of Object.entries(groupedEntities)) {
+            const filtered = entities.filter(e => 
+                e.name.toLowerCase().includes(filterText.toLowerCase()) || 
+                e.id.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            if (filtered.length > 0) {
+                // Малюємо заголовок категорії (стилі підхопляться автоматично з CSS)
+                contentHTML += `<div class="menu-category-title">${category}</div>`;
+                
+                contentHTML += filtered.map(entity => `
+                    <div class="entity-item" onclick="selectEntity('${s}', '${entity.id}', event)">
+                        <div class="entity-icon-wrapper">
+                            <img src="../images/${entity.id}.svg" onerror="this.src='../images/default.svg'" loading="lazy" class="entity-icon">
+                        </div>
+                        <span>${entity.name}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        const container = dropdown.querySelector('.menu-list-container');
+        if (container) {
+            container.innerHTML = contentHTML;
         } else {
             dropdown.innerHTML = searchHTML + `<div class="menu-list-container">${contentHTML}</div>`;
         }
