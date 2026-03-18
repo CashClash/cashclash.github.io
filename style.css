@@ -219,21 +219,22 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     line-height: 1.2;
 }
 .entity-selector {
-    display: inline-flex;
-    align-items: flex-start; /* ВАЖЛИВО: вирівнює вміст по верхньому краю */
-    justify-content: center;
+    display: flex;
+    align-items: flex-start; /* Притискаємо все до верху */
     gap: 6px;
     cursor: pointer;
-    max-width: 100%;
+    width: 100%;
 }
 .selector-arrow {
-    display: inline-block;
-    white-space: nowrap; /* Стрілка не переноситься без останнього слова */
-    font-size: 10px;
+    font-size: 8px; /* Робимо її трохи меншою, щоб не перетягувала увагу */
     color: var(--text-dim);
-    margin-left: 4px;
-    position: relative;
-    top: -1px;
+    margin-top: 5px; /* Підганяємо вертикально, щоб була на рівні середини літер першого рядка */
+    flex-shrink: 0;  /* Важливо: стрілка ніколи не стискається */
+    transition: 0.3s;
+}
+
+.entity-dropdown.active + .entity-selector .selector-arrow {
+    transform: rotate(180deg);
 }
 
 .entity-dropdown {
@@ -304,8 +305,8 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     font-size: clamp(14px, 4vw, 18px);
     font-weight: 700;
     text-transform: uppercase;
-    display: inline-block; 
-    word-wrap: break-word;
+    line-height: 1.2;
+    word-break: break-word; /* Щоб довгі назви не ламали верстку */
 }
 
 .visualizer {
