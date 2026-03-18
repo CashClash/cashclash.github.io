@@ -135,7 +135,12 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 .card.spending { border-top: 3px solid var(--red-accent); }
 .card.income { border-top: 3px solid var(--green-accent); }
 
-.card-header { position: relative; cursor: pointer; border-radius: 8px; transition: background 0.2s; padding: 5px; }
+.card-header {
+    display: flex;
+    align-items: center;
+    width: 100%; /* Гарантуємо, що заголовок займає всю ширину */
+    gap: 12px;
+}
 .card-header:hover { background: rgba(255,255,255,0.05); }
 .year-badge {
     position: absolute;
@@ -306,11 +311,15 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9));
 }
 .entity-name {
-    font-size: clamp(14px, 4vw, 18px);
-    font-weight: 700;
+    flex: 1; /* Дозволяє тексту розширюватися на весь вільний простір справа */
+    font-size: 1.5rem;
+    font-weight: bold;
     text-transform: uppercase;
-    line-height: 1.2;
-    display: block;
+    
+    /* Магія проти роздування */
+    overflow-wrap: break-word; 
+    word-break: break-word; /* Для підтримки старих браузерів */
+    min-width: 0; /* Важливо для flex-елементів, щоб вони могли звужуватися */
 }
 
 .visualizer {
