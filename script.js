@@ -466,6 +466,13 @@ function setupEventListeners() {
             updateUI();
         }
     });
+    ['left', 'right'].forEach(side => {
+          const headerInfo = document.querySelector(`#${side}Card .header-main-info`);
+          if (headerInfo) {
+              headerInfo.style.cursor = 'pointer'; // щоб було видно, що клікабельно
+              headerInfo.onclick = (e) => toggleEntityMenu(side, e);
+          }
+      });
 }
 
 function updateEntityName(side, name) {
