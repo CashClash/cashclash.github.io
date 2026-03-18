@@ -116,7 +116,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     background: var(--card-bg);
     border-radius: 15px;
     padding: 8px;
-    overflow: hidden;
+    overflow: visible !important;
     border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
@@ -135,8 +135,9 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 .card-header:hover { background: rgba(255,255,255,0.05); }
 .year-badge {
     position: absolute;
-    bottom: 8px;   /* Тепер він знизу */
-    right: 8px;    /* У правому куті графіка */
+    top: 8px;
+    right: 8px;
+    bottom: auto;
     font-size: 10px;
     font-weight: 800;
     padding: 2px 6px;
@@ -200,10 +201,8 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 }
 .name-wrapper {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Текст починається зверху */
     text-align: left;
+    line-height: 1.2;
 }
 .entity-selector {
     display: inline-flex;
@@ -288,11 +287,11 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9));
 }
 .entity-name {
-    font-size: clamp(14px, 4vw, 18px); /* Трохи зменшив для мобільних, щоб влізло */
+    font-size: clamp(14px, 4vw, 18px);
     font-weight: 700;
     text-transform: uppercase;
-    line-height: 1.2;
-    display: inline;
+    display: inline-block; 
+    word-wrap: break-word;
 }
 
 .visualizer {
@@ -582,9 +581,10 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 /* Сама плашка з текстом */
 .tooltip-text {
     position: absolute;
-    top: 100%;
+    top: 35px;
     right: 0;
-    width: 200px;
+    width: 250px;
+    z-index: 100;
     background: var(--card-bg);
     border: 1px solid var(--border);
     color: var(--text-main);
@@ -592,7 +592,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     border-radius: 8px;
     font-size: 11px;
     line-height: 1.4;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     visibility: hidden;
     opacity: 0;
     transition: 0.2s;
@@ -608,13 +608,12 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 /* Фікс для того, щоб картинка і ім'я не з'їжджали вбік */
 .header-main-info {
     display: flex;
-    flex-direction: row;
-    align-items: flex-start; /* Іконка завжди зверху */
+    align-items: flex-start;
     gap: 12px;
     width: 100%;
-    /* 120px гарантує, що навіть 5 рядків тексту не зрушать графік вниз */
-    min-height: 120px; 
-    margin-bottom: 10px;
+    min-height: 60px; /* Мінімальна висота, щоб не стрибало при зміні */
+    position: relative;
+    padding-right: 30px; /* Місце для "?" */
 }
 
 /* Пульсація при натисканні (опціонально) */
@@ -658,15 +657,15 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
         right: 12px;
     }
 .header-main-info {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start; /* Іконка завжди зверху */
-    gap: 12px;
-    width: 100%;
-    /* 120px гарантує, що навіть 5 рядків тексту не зрушать графік вниз */
-    min-height: 120px; 
-    margin-bottom: 10px;
-}
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+        /* Міняємо 120px на 70-80px або взагалі на min-content */
+        min-height: 70px;  
+        margin-bottom: 10px;
+    }
     .app-container { padding: 20px; gap: 20px; }
     .card { padding: 25px; }
 
@@ -686,21 +685,20 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 
     /* Назви (NASA / ELON MUSK) */
 .entity-name {
-    font-size: clamp(14px, 4vw, 18px);
-    font-weight: 700;
-    text-transform: uppercase;
-    line-height: 1.2;
-    display: inline; /* Важливо для обтікання */
-}
+        font-size: clamp(14px, 4vw, 18px);
+        font-weight: 700;
+        text-transform: uppercase;
+        line-height: 1.2;
+        display: inline-block; /* Змінено з inline на inline-block */
+        vertical-align: top;
+    }
 
 .selector-arrow {
     display: inline-block;
-    white-space: nowrap; /* Стрілка не переноситься без останнього слова */
     font-size: 10px;
     color: var(--text-dim);
     margin-left: 4px;
-    position: relative;
-    top: -1px;
+    vertical-align: middle;
 }
 
     .subtext { font-size: 11px; }
