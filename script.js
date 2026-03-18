@@ -108,17 +108,26 @@ function renderEntityMenus(filterText = '', side = null) {
             );
 
             if (filtered.length > 0) {
-                // Малюємо заголовок категорії (стилі підхопляться автоматично з CSS)
+                // Додаємо заголовок категорії
                 contentHTML += `<div class="menu-category-title">${category}</div>`;
                 
-                contentHTML += filtered.map(entity => `
-                    <div class="entity-item" onclick="selectEntity('${s}', '${entity.id}', event)">
-                        <div class="entity-icon-wrapper">
-                            <img src="../images/${entity.id}.svg" onerror="this.src='../images/default.svg'" loading="lazy" class="entity-icon">
+                contentHTML += filtered.map(entity => {
+                    // ПЕРЕВІРКА ІКОНКИ: беремо з кешу (якщо є) або ставимо дефолтний .svg
+                    const cachedData = entityCache[entity.id];
+                    const imagePath = cachedData ? `../${cachedData.image}` : `../images/${entity.id}.svg`;
+
+                    return `
+                        <div class="entity-item" onclick="selectEntity('${s}', '${entity.id}', event)">
+                            <div class="entity-icon-wrapper">
+                                <img src="${imagePath}" 
+                                     onerror="this.src='../images/default.svg'; this.onerror=null;" 
+                                     loading="lazy" 
+                                     class="entity-icon">
+                            </div>
+                            <span>${entity.name}</span>
                         </div>
-                        <span>${entity.name}</span>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         }
 
