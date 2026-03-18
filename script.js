@@ -30,10 +30,10 @@ const wholeFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0
 async function init() {
     applyInitialTheme();
     createVisualizerColumns();
-    await preloadLangNames();
-    await loadLanguage(currentLang);
+    await loadLanguage(currentLang); 
     setupEventListeners();
     startTickers();
+    preloadLangNames(); 
 }
 
 async function preloadLangNames() {
@@ -41,19 +41,24 @@ async function preloadLangNames() {
         try {
             const res = await fetch(`../${lang}/main.json`).then(r => r.json());
             langDataCache[lang] = {
-                langName: res.ui.lang,  
-                shortName: res.ui.short 
+                langName: res.ui.lang,
+                shortName: res.ui.short
             };
-        } catch (e) { console.error(`Failed to preload ${lang}`, e); }
+        } catch (e) { console.error(e); }
     }
-  for (let id of entityList) {
+    renderLangSelector();
+
+    const promises = entityList.map(async (id) => {
         try {
             const res = await fetch(`./data/${id}.json`).then(r => r.json());
             const cat = (res.category || "OTHER").toUpperCase();
             if (!groupedEntities[cat]) groupedEntities[cat] = [];
             groupedEntities[cat].push({ id, name: res.name });
-        } catch (e) { console.error(e); }
-    }
+        } catch (e) { console.log(`Skip ${id}`); }
+    });
+
+    await Promise.all(promises);
+    renderEntityMenus();
 }
 
 async function loadLanguage(lang) {
