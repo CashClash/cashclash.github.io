@@ -636,20 +636,7 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
 .info-tooltip-wrapper[data-html2canvas-ignore] {
     display: none;
 }
-/* Desktop Adaptivity */
-@media (max-width: 380px) {
-    .approx { display: none; } /* Прибираємо ≈ якщо зовсім мало місця */
-    .subtext { font-size: 7px; }
-}
-@media (max-width: 480px) {
-    .year-badge {
-        width: fit-content;
-        padding: 2px 6px;
-        font-size: 9px;
-        background: rgba(0, 0, 0, 0.6); 
-        backdrop-filter: blur(4px);
-    }
-}
+
 @media (min-width: 900px) {
     .contrast-grid { 
         grid-template-columns: 1fr 1fr; 
@@ -663,11 +650,12 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     }
     .year-badge {
-        font-size: 12px;
+        font-size: 10px; /* Робимо 10px, як домовлялися для однаковості */
         top: 0;
         left: 0;
         right: auto;
-        padding: 6px 12px;
+        padding: 4px 10px; /* Повертаємо стандартний паддінг */
+        border-radius: 14px 0 10px 0;
     }
 .header-main-info {
         display: flex;
@@ -734,12 +722,24 @@ nav button.active { background: var(--text-main); color: var(--bg-color); }
     .donate-card p { font-size: 16px; }
     .seo-section { font-size: 14px; max-width: 100%; width: 100%; margin: 0; }
     /* --- ЗБІЛЬШЕННЯ ПІДКАЗКИ ДЛЯ ДЕСКТОПІВ --- */
-    .info-icon {
-        width: 24px;   /* Було 18px */
-        height: 24px;
-        font-size: 14px; /* Було 11px */
-        top: 15px;      /* Трохи центруємо відносно більшого хедера */
-        right: 15px;
+.info-icon {
+        /* Прибираємо фіксовані розміри, які тут були раніше */
+        width: auto;
+        height: auto;
+        
+        font-size: 10px; /* Було 14px, ставимо 10px для симетрії */
+        font-weight: 800;
+        
+        /* Ставимо такі ж координати і відступи, як у року */
+        top: 0;
+        right: 0;
+        padding: 4px 10px;
+        
+        /* Оновлюємо скруглення та рамки для десктопа */
+        border: none;
+        border-bottom: 1px solid var(--border);
+        border-left: 1px solid var(--border);
+        border-radius: 0 15px 0 10px;
     }
 
     .tooltip-text {
