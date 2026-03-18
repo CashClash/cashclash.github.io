@@ -517,7 +517,7 @@ async function takeScreenshot() {
                     }
                     
                     if (currentYear === "2026") {
-                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; background:#ff4d4d; border-radius:50%; margin-right:4px;"></span> LIVE 2026`;
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; background:#ff4d4d; border-radius:50%; margin-right:4px;"></span> 2026`;
                         badge.style.color = '#ff4d4d';
                     } else {
                         badge.innerText = currentYear;
