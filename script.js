@@ -46,33 +46,17 @@ window.addEventListener('resize', syncHeaderHeights);
 async function init() {
     applyInitialTheme();
     createVisualizerColumns();
-    
-    // Спочатку вантажимо мову та ПЕРШІ дані
     await loadLanguage(currentLang); 
-    
-    // Потім збираємо решту списку сутностей
-    await preloadLangNames(); 
-    
     setupEventListeners();
-    startTickers(); // Тепер дані точно є, можна запускати
+    startTickers();
+    preloadLangNames(); 
 }
 
-function adjustFontSize(element) {
-    const parent = element.parentElement;
-    // Отримуємо доступну ширину (віднімаємо аватарку та gap)
-    // Або просто порівнюємо з шириною батька, якщо flex: 1
-    let maxAllowedWidth = parent.clientWidth - 60; // приблизний запас під аватарку
-    
-    let currentFontSize = parseInt(window.getComputedStyle(element).fontSize);
-    const minFontSize = 10; // поріг, нижче якого вже нечитабельно
-
-    // Скидаємо перед перевіркою
-    element.style.fontSize = ""; 
-    
-    // Цикл зменшення
-    while (element.scrollWidth > element.offsetWidth && currentFontSize > minFontSize) {
-        currentFontSize -= 1;
-        element.style.fontSize = currentFontSize + "px";
+function fitText(element) {
+    let fontSize = parseFloat(window.getComputedStyle(element).fontSize);
+    while (element.scrollWidth > element.offsetWidth && fontSize > 10) {
+        fontSize -= 1;
+        element.style.fontSize = fontSize + "px";
     }
 }
 
@@ -303,7 +287,6 @@ function toggleMode(side, mode) {
 function updateUI() {
     ["left", "right"].forEach(side => {
         const data = financialData[side];
-        if (!data || !data.data || !data.data[currentYear]) return;
         if (!data || !data.data[currentYear]) return;
         const mode = cardModes[side];
         const container = document.getElementById(`${side}Details`);
@@ -376,6 +359,11 @@ function startTickers() {
 
             const rate = basePerSec * drift[side] * multipliers[currentTimeUnit];
             
+            const nameEl = document.getElementById(`${side}Name`);
+            const iconEl = document.getElementById(`${side}Icon`);
+            if(nameEl) nameEl.innerText = data.name;
+            if(iconEl) iconEl.src = `../${data.image}`;
+
             const lerpFactor = 0.1;
             displayValues[`${side}Rate`] += (rate - displayValues[`${side}Rate`]) * lerpFactor;
             const rateVal = displayValues[`${side}Rate`];
@@ -482,18 +470,20 @@ function setupEventListeners() {
 
 function updateEntityName(side, name) {
     const nameElement = document.getElementById(side + 'Name');
-    if (!nameElement) return;
-
+    fitText(nameElement);
+    // Оновлюємо ТІЛЬКИ текст імені, не чіпаючи стрілочку, якщо вона в окремому span
     nameElement.innerText = name; 
     
-    // Скидаємо розмір до стандартного з CSS перед розрахунком
-    nameElement.style.fontSize = ''; 
-
-    // Викликаємо автоматику з мікро-затримкою, щоб браузер встиг "відмалювати" текст
-    setTimeout(() => {
-        adjustFontSize(nameElement);
-        syncHeaderHeights(); 
-    }, 10);
+    // Динамічне зменшення шрифту для довгих назв (ASEAN тощо)
+    if (name.length > 25) {
+        nameElement.style.fontSize = '12px';
+    } else if (name.length > 15) {
+        nameElement.style.fontSize = '14px';
+    } else {
+        nameElement.style.fontSize = ''; // Повертає значення з CSS
+    }
+  
+    setTimeout(syncHeaderHeights, 0);
 }
 
 async function takeScreenshot() {
@@ -513,40 +503,36 @@ async function takeScreenshot() {
             backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-color'),
             scale: 2,
             onclone: (clonedDoc) => {
-              const toHide = clonedDoc.querySelectorAll('.info-tooltip-wrapper, .selector-arrow, .entity-dropdown');
-              toHide.forEach(el => el.style.display = 'none');
-          
-              clonedDoc.querySelectorAll('.card').forEach(card => {
-                  let badge = card.querySelector('.year-badge');
-                  if (!badge) {
-                      badge = document.createElement('div');
-                      badge.className = 'year-badge';
-                      card.appendChild(badge);
-                  }
-                  
-                  // Встановлюємо стилі для скріншота
-                  badge.style.position = 'absolute';
-                  badge.style.top = '10px';
-                  badge.style.right = '10px';
-                  badge.style.display = 'flex';
-                  badge.style.alignItems = 'center';
-          
-                  if (currentYear === "2026") {
-                      badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; background:#ff4d4d; border-radius:50%; margin-right:4px;"></span> 2026`;
-                      badge.style.color = '#ff4d4d';
-                  } else {
-                      badge.innerText = currentYear;
-                      badge.style.color = '#888888'; // або var(--text-dim)
-                      badge.style.border = '1px solid #333';
-                  }
-              });
-          
-              const grid = clonedDoc.querySelector('.contrast-grid');
-              if (grid) {
-                  grid.style.padding = '30px 15px';
-                  grid.style.background = '#0d0d0d'; // жорсткий колір для стабільності
-              }
-          }
+                // Ховаємо сміття
+                const toHide = clonedDoc.querySelectorAll('.info-tooltip-wrapper, .selector-arrow, .entity-dropdown');
+                toHide.forEach(el => el.style.display = 'none');
+
+                // ПРАВИЛЬНИЙ БЕЙДЖ РОКУ НА СКРІНШОТІ
+                clonedDoc.querySelectorAll('.card').forEach(card => {
+                    let badge = card.querySelector('.year-badge');
+                    if (!badge) {
+                        badge = document.createElement('div');
+                        badge.className = 'year-badge';
+                        card.appendChild(badge);
+                    }
+                    
+                    if (currentYear === "2026") {
+                        badge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; background:#ff4d4d; border-radius:50%; margin-right:4px;"></span> 2026`;
+                        badge.style.color = '#ff4d4d';
+                    } else {
+                        badge.innerText = currentYear;
+                        badge.style.color = 'var(--text-dim)';
+                        badge.style.border = '1px solid var(--border)';
+                    }
+                });
+
+                // Вирівнюємо відступи сітки
+                const grid = clonedDoc.querySelector('.contrast-grid');
+                if (grid) {
+                    grid.style.padding = '30px 15px';
+                    grid.style.background = getComputedStyle(document.body).getPropertyValue('--bg-color');
+                }
+            }
         });
 
         const image = canvas.toDataURL("image/png", 1.0);
