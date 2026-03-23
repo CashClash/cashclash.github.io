@@ -436,6 +436,10 @@ function startTickers() {
             if (visualizer) {
                 const columns = visualizer.querySelectorAll('.bar-column');
                 const isYearlyLoss = yearlyTotal < 0;
+                
+                // Визначаємо поточний місяць (0-11)
+                const now = new Date();
+                const currentMonth = now.getMonth();
 
                 for (let i = 0; i < 12; i++) {
                     const col = columns[i];
@@ -447,6 +451,17 @@ function startTickers() {
                     col.style.height = `${Math.max(heightPercent, 2)}%`;
                     const color = (mode === 'spending' || isYearlyLoss) ? '#ff4d4d' : '#00ff88';
                     col.style.setProperty('--accent-color', color);
+
+                    // ЛОГІКА ЗАФАРБОВУВАННЯ:
+                    // Якщо рік минулий — малюємо всі стовпчики.
+                    // Якщо 2026 — тільки ті, що вже минули (i <= currentMonth).
+                    if (currentYear !== "2026" || i <= currentMonth) {
+                        col.style.opacity = "1";
+                        col.style.background = "var(--accent-color)";
+                    } else {
+                        col.style.opacity = "0.2"; // Тьмяні стовпчики для майбутніх місяців
+                        col.style.background = "rgba(255,255,255,0.1)"; 
+                    }
                 }
             }
         });
